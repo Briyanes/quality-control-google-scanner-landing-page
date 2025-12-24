@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
-export default function ScannerPage() {
+function ScannerContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [url, setUrl] = useState('')
@@ -962,5 +962,26 @@ export default function ScannerPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function ScannerPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f9fafb' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '48px', height: '48px', border: '4px solid #e5e7eb', borderTop: '4px solid #3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>Loading scanner...</p>
+        </div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    }>
+      <ScannerContent />
+    </Suspense>
   )
 }
