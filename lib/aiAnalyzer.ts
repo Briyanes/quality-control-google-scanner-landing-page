@@ -3,9 +3,14 @@ import { AIAnalysisResult } from './types'
 export async function analyzeWithAI(
   html: string,
   url: string,
-  apiKey: string,
-  apiUrl: string
+  apiKey?: string,
+  apiUrl?: string
 ): Promise<AIAnalysisResult | null> {
+  // Skip AI analysis if API credentials are not provided
+  if (!apiKey || !apiUrl) {
+    console.log('AI API credentials not provided, skipping AI analysis')
+    return null
+  }
   try {
     const text = extractTextContent(html)
 

@@ -2,7 +2,7 @@ import { checkRedirectChain, hasThirdPartyRedirect, getFinalUrl, extractDomain }
 import { parseHTMLStructure } from './htmlParser'
 import { analyzeContent } from './contentAnalyzer'
 import { analyzeWithAI } from './aiAnalyzer'
-import { ScanResult, Requirement, RequirementCategory } from './types'
+import { ScanResult, Requirement, RequirementCategory, AIAnalysisResult } from './types'
 
 export async function scanLandingPage(url: string): Promise<ScanResult> {
   const startTime = Date.now()
@@ -33,11 +33,12 @@ export async function scanLandingPage(url: string): Promise<ScanResult> {
   const contentAnalysis = analyzeContent(html, url)
 
   // Step 5: AI Analysis (optional, can fail gracefully)
-  let aiAnalysis
+  let aiAnalysis: AIAnalysisResult | undefined
   try {
-    const apiKey = process.env.Z_AI_API_KEY!
-    const apiUrl = process.env.Z_AI_API_URL!
-    aiAnalysis = await analyzeWithAI(html, url, apiKey, apiUrl)
+    const apiKey = process.env.Z_AI_API_KEY
+    const apiUrl = process.env.Z_AI_API_URL
+    const result = await analyzeWithAI(html, url, apiKey, apiUrl)
+    aiAnalysis = result || undefined
   } catch (error) {
     console.error('AI analysis failed, continuing without it:', error)
   }
