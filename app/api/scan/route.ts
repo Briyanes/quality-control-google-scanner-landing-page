@@ -2,9 +2,33 @@ import { NextRequest, NextResponse } from 'next/server'
 import { scanLandingPage } from '@/lib/lpScanner'
 import { supabase } from '@/lib/supabase'
 import { checkRedirectChain } from '@/lib/redirectChecker'
+import { validateUrl, checkUrlAccessible } from '@/lib/urlValidator'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 10 requests per minute per IP
+    const clientIp = getClientIp(request)
+    const rateLimitResult = checkRateLimit(clientIp, 10, 60 * 1000)
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many requests. Please try again later.',
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
+
     const body = await request.json()
     const { url } = body
 
@@ -15,25 +39,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate URL format
-    try {
-      new URL(url)
-    } catch {
+    // Strict URL validation to prevent SSRF
+    const validationResult = validateUrl(url)
+    if (!validationResult.valid) {
       return NextResponse.json(
-        { error: 'Invalid URL format' },
+        { error: validationResult.error || 'Invalid URL' },
         { status: 400 }
       )
     }
 
-    // Check if URL is accessible
-    const testResponse = await fetch(url, {
-      method: 'HEAD',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    }).catch(() => null)
-
-    if (!testResponse || !testResponse.ok) {
+    // Check if URL is accessible (with timeout)
+    const isAccessible = await checkUrlAccessible(url, 10000)
+    if (!isAccessible) {
       return NextResponse.json(
         { error: 'Unable to access the URL. Please check if the URL is valid and accessible.' },
         { status: 400 }
@@ -81,6 +98,12 @@ export async function POST(request: NextRequest) {
       success: true,
       scan: scanResult,
       scanId: scanData?.id
+    }, {
+      headers: {
+        'X-RateLimit-Limit': '10',
+        'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+        'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString()
+      }
     })
 
   } catch (error) {
