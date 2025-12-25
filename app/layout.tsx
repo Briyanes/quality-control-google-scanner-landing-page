@@ -13,8 +13,13 @@ export const metadata: Metadata = {
   creator: 'Hadona',
   publisher: 'Hadona',
   icons: {
-    icon: '/logo/logo-hadona.png',
-    apple: '/logo/logo-hadona.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo/logo-hadona.png', sizes: '512x512', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/logo/logo-hadona.png', sizes: '180x180', type: 'image/png' }
+    ],
   },
   openGraph: {
     title: 'Quality Control Scanner - Hadona',
