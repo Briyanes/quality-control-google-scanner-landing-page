@@ -29,21 +29,13 @@ export const metadata: Metadata = {
     description: 'Scan landing page untuk kepatuhan Google Ads. Validasikan landing page Anda terhadap persyaratan Google Ads dengan analisis berbasis AI yang cepat dan akurat.',
     url: 'https://qcscanner.hadona.id',
     siteName: 'QC Scanner by Hadona',
-    images: [{
-      url: 'https://qcscanner.hadona.id/logo/logo-hadona.png',
-      width: 512,
-      height: 512,
-      alt: 'QC Scanner Logo - Validasi Kepatuhan Google Ads',
-    }],
     locale: 'id_ID',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@qcscanner.hadona.id',
     title: 'Scanner QC Landing Page - Hadona',
     description: 'Scan landing page untuk kepatuhan Google Ads. Validasikan landing page Anda terhadap persyaratan Google Ads dengan analisis berbasis AI.',
-    images: ['https://qcscanner.hadona.id/logo/logo-hadona.png'],
   },
   robots: {
     index: true,
