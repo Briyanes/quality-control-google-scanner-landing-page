@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['hadona.id'],
+    domains: ['hadona.id', 'qcscanner.hadona.id'],
     unoptimized: false
   },
   experimental: {
@@ -22,7 +22,7 @@ const nextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'SAMEORIGIN'
           },
           {
             key: 'X-XSS-Protection',
@@ -30,7 +30,7 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
+            value: 'origin-when-cross-origin'
           },
           {
             key: 'Permissions-Policy',
@@ -42,9 +42,9 @@ const nextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-              "img-src 'self' data: https: blob: https://*.supabase.co",
+              "img-src 'self' data: https: blob: https://*.supabase.co https://qcscanner.hadona.id https://hadona.id https://*.hadona.id https://*.vercel.app https://cdn.jsdelivr.net",
               "font-src 'self' https://cdn.jsdelivr.net data:",
-              "connect-src 'self' https://*.supabase.co https://supabase.co https://qcscanner.hadona.id https://hadona.id wss://*.supabase.co wss://supabase.co",
+              "connect-src 'self' https://*.supabase.co https://supabase.co https://qcscanner.hadona.id https://hadona.id https://*.hadona.id https://*.vercel.app wss://*.supabase.co wss://supabase.co",
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",
