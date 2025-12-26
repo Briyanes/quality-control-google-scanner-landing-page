@@ -8,10 +8,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://qcscanner.hadona.id'),
   title: 'Scanner QC Landing Page - Hadona',
   description: 'Scan landing page untuk kepatuhan Google Ads. Validasikan landing page Anda terhadap persyaratan Google Ads dengan analisis berbasis AI.',
-  keywords: ['Google Ads', 'Landing Page', 'Quality Control', 'Scanner', 'Kepatuhan', 'Kebijakan Iklan'],
+  keywords: ['Google Ads', 'Landing Page', 'Quality Control', 'Scanner', 'Kepatuhan', 'Kebijakan Iklan', 'Validasi Landing Page', 'Google Ads Policy'],
   authors: [{ name: 'Hadona' }],
   creator: 'Hadona',
   publisher: 'Hadona',
+  alternates: {
+    canonical: 'https://qcscanner.hadona.id',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -28,9 +31,18 @@ export const metadata: Metadata = {
     siteName: 'QC Scanner',
     images: [{
       url: '/logo/logo-hadona.png',
+      width: 512,
+      height: 512,
+      alt: 'QC Scanner Logo - Hadona',
     }],
     locale: 'id_ID',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Scanner QC Landing Page - Hadona',
+    description: 'Scan landing page untuk kepatuhan Google Ads. Validasikan landing page Anda dengan analisis AI.',
+    images: ['/logo/logo-hadona.png'],
   },
   robots: {
     index: true,
