@@ -73,7 +73,7 @@ export default function HomePage() {
               color: '#6b7280',
               margin: 0
             }}>
-              Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
             </p>
           </div>
           <div style={{
@@ -1314,7 +1314,7 @@ export default function HomePage() {
                     marginBottom: '4px',
                     fontSize: '14px'
                   }}>
-                    Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+                    Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
                   </div>
                   <div style={{
                     fontSize: '12px',
@@ -1600,7 +1600,7 @@ export default function HomePage() {
             color: '#6b7280',
             margin: '0 0 8px 0'
           }}>
-            <span>© 2025 QC Landing Page Scanner. Didukung oleh</span>
+            <span>© 2025 QC Landing Page Scanner. Powered by</span>
             <span style={{ fontWeight: '600', color: '#2563eb', marginLeft: '4px' }}>
               Hadona Digital Media
             </span>
@@ -1610,7 +1610,7 @@ export default function HomePage() {
             color: '#9ca3af',
             margin: 0
           }}>
-            Dirancang & Dikembangkan oleh <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
+            Designed & Developed by <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
           </p>
         </div>
       </footer>

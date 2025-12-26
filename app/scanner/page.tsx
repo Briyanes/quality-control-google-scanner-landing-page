@@ -244,7 +244,7 @@ function ScannerContent() {
               color: '#6b7280',
               margin: 0
             }}>
-              Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
             </p>
           </div>
 
@@ -960,7 +960,7 @@ function ScannerContent() {
             color: '#6b7280',
             margin: '0 0 8px 0'
           }}>
-            <span className="footer-text-1">© 2025 Quality Control Scanner. Didukung oleh</span>
+            <span className="footer-text-1">© 2025 Quality Control Scanner. Powered by</span>
             <span className="footer-hadona" style={{ fontWeight: '600', color: '#2563eb', marginLeft: '4px' }}>
               Hadona Digital Media
             </span>
@@ -970,7 +970,7 @@ function ScannerContent() {
             color: '#9ca3af',
             margin: 0
           }}>
-            Dirancang & Dikembangkan oleh <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
+            Designed & Developed by <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
           </p>
         </div>
       </footer>
