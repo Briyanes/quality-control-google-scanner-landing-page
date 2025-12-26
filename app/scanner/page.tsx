@@ -386,8 +386,8 @@ function ScannerContent() {
             marginBottom: '24px',
             lineHeight: '1.2'
           }}>
-            Scanner Kepatuhan Landing Page<br />
-            <span style={{ color: '#2563eb' }}>Google Ads</span>
+            Validasikan Landing Page Anda<br />
+            <span style={{ color: '#2563eb' }}>Untuk Kepatuhan Google Ads</span>
           </h1>
           <p style={{
             fontSize: '20px',
