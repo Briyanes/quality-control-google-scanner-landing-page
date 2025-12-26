@@ -88,13 +88,13 @@ function evaluateDomainAndRedirect(
 
   // Check 1: URL consistency
   requirements.push({
-    name: 'Destination URL Match',
+    name: 'URL Tujuan Cocok',
     status: url === finalUrl ? 'pass' : 'warning',
     description: url === finalUrl
-      ? 'Display URL matches final URL'
-      : `Redirects from ${url} to ${finalUrl}`,
+      ? 'URL tampilan cocok dengan URL final'
+      : `Redirect dari ${url} ke ${finalUrl}`,
     recommendation: url !== finalUrl
-      ? 'Consider using the final URL directly to improve user experience'
+      ? 'Pertimbangkan untuk menggunakan URL final secara langsung untuk meningkatkan pengalaman pengguna'
       : undefined,
     points: url === finalUrl ? 10 : 5
   })
@@ -102,16 +102,16 @@ function evaluateDomainAndRedirect(
   // Check 2: No third-party redirects
   const hasThirdParty = hasThirdPartyRedirect(redirectChain, originalDomain)
   requirements.push({
-    name: 'No Third-Party Redirects',
+    name: 'Tidak Ada Redirect Pihak Ketiga',
     status: hasThirdParty ? 'fail' : 'pass',
     description: hasThirdParty
-      ? 'Redirect chain includes third-party domains'
-      : 'All redirects stay within the same domain',
+      ? 'Rantai redirect mencakup domain pihak ketiga'
+      : 'Semua redirect berada dalam domain yang sama',
     evidence: hasThirdParty
       ? redirectChain.map(r => r.url).join(' → ')
       : undefined,
     recommendation: hasThirdParty
-      ? 'Remove third-party redirects to comply with Google Ads policies'
+      ? 'Hapus redirect pihak ketiga untuk mematuhi kebijakan Google Ads'
       : undefined,
     points: hasThirdParty ? 0 : 10
   })
@@ -119,11 +119,11 @@ function evaluateDomainAndRedirect(
   // Check 3: Redirect count
   const redirectCount = redirectChain.filter(r => r.isRedirect).length
   requirements.push({
-    name: 'Reasonable Redirect Count',
+    name: 'Jumlah Redirect Wajar',
     status: redirectCount <= 2 ? 'pass' : redirectCount <= 5 ? 'warning' : 'fail',
-    description: `${redirectCount} redirect(s) detected`,
+    description: `${redirectCount} redirect terdeteksi`,
     recommendation: redirectCount > 2
-      ? 'Reduce redirect count to improve page load speed'
+      ? 'Kurangi jumlah redirect untuk meningkatkan kecepatan load halaman'
       : undefined,
     points: redirectCount <= 2 ? 5 : redirectCount <= 5 ? 3 : 0
   })
@@ -134,7 +134,7 @@ function evaluateDomainAndRedirect(
   const totalPoints = requirements.reduce((sum, r) => sum + r.points, 0)
 
   return {
-    categoryName: 'Domain & Redirect Policy',
+    categoryName: 'Kebijakan Domain & Redirect',
     passed,
     failed,
     warnings,
@@ -149,35 +149,35 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
 
   // Check 1: Substantial content
   requirements.push({
-    name: 'Substantial Content',
+    name: 'Konten Substansial',
     status: contentAnalysis.hasSubstantialContent ? 'pass' : 'fail',
-    description: `${contentAnalysis.textLength} characters of visible text`,
+    description: `${contentAnalysis.textLength} karakter teks terlihat`,
     recommendation: !contentAnalysis.hasSubstantialContent
-      ? 'Add more meaningful content to provide value to visitors'
+      ? 'Tambahkan konten yang lebih bermakna untuk memberikan nilai kepada pengunjung'
       : undefined,
     points: contentAnalysis.hasSubstantialContent ? 8 : 0
   })
 
   // Check 2: No arbitrage
   requirements.push({
-    name: 'No Ad Arbitrage',
+    name: 'Tidak Ada Arbitrase Iklan',
     status: !contentAnalysis.hasArbitragePattern ? 'pass' : 'fail',
     description: contentAnalysis.hasArbitragePattern
-      ? 'Page appears to have more ads than content'
-      : 'Good balance of content and advertisements',
+      ? 'Halaman tampak memiliki lebih banyak iklan daripada konten'
+      : 'Keseimbangan yang baik antara konten dan iklan',
     recommendation: contentAnalysis.hasArbitragePattern
-      ? 'Reduce advertisements and add more original content'
+      ? 'Kurangi iklan dan tambahkan lebih banyak konten orisinal'
       : undefined,
     points: !contentAnalysis.hasArbitragePattern ? 8 : 0
   })
 
   // Check 3: Text to HTML ratio
   requirements.push({
-    name: 'Content Density',
+    name: 'Kepadatan Konten',
     status: contentAnalysis.textToHTMLRatio > 0.15 ? 'pass' : 'warning',
-    description: `Text to HTML ratio: ${(contentAnalysis.textToHTMLRatio * 100).toFixed(1)}%`,
+    description: `Rasio teks ke HTML: ${(contentAnalysis.textToHTMLRatio * 100).toFixed(1)}%`,
     recommendation: contentAnalysis.textToHTMLRatio <= 0.15
-      ? 'Improve content-to-code ratio for better SEO'
+      ? 'Tingkatkan rasio konten-ke-kode untuk SEO yang lebih baik'
       : undefined,
     points: contentAnalysis.textToHTMLRatio > 0.15 ? 7 : 3
   })
@@ -185,22 +185,22 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
   // Check 4: Unique content (from AI if available)
   if (aiAnalysis?.contentOriginality) {
     requirements.push({
-      name: 'Content Originality',
+      name: 'Orisinalitas Konten',
       status: aiAnalysis.contentOriginality.isUnique ? 'pass' : 'fail',
-      description: `AI uniqueness score: ${aiAnalysis.contentOriginality.score}/100`,
+      description: `Skor keunikan AI: ${aiAnalysis.contentOriginality.score}/100`,
       recommendation: !aiAnalysis.contentOriginality.isUnique
-      ? 'Ensure content is original and not scraped from other sources'
+      ? 'Pastikan konten orisinal dan tidak diambil dari sumber lain'
       : undefined,
       points: aiAnalysis.contentOriginality.isUnique ? 7 : 0
     })
   } else {
     // Fallback: check duplicate pattern
     requirements.push({
-      name: 'Content Uniqueness',
+      name: 'Keunikan Konten',
       status: !contentAnalysis.hasDuplicatePattern ? 'pass' : 'warning',
-      description: 'Content appears to be unique based on text analysis',
+      description: 'Konten tampak unik berdasarkan analisis teks',
       recommendation: contentAnalysis.hasDuplicatePattern
-        ? 'Consider adding more unique, valuable content'
+        ? 'Pertimbangkan untuk menambahkan lebih banyak konten unik dan berharga'
         : undefined,
       points: !contentAnalysis.hasDuplicatePattern ? 7 : 3
     })
@@ -212,7 +212,7 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
   const totalPoints = requirements.reduce((sum, r) => sum + r.points, 0)
 
   return {
-    categoryName: 'Content Originality & Quality',
+    categoryName: 'Orisinalitas & Kualitas Konten',
     passed,
     failed,
     warnings,
@@ -235,40 +235,40 @@ function evaluateFormAndIntegration(htmlStructure: any): RequirementCategory {
   })
 
   requirements.push({
-    name: 'Embedded Forms',
+    name: 'Formulir Tersemat',
     status: !hasExternalFormAction ? 'pass' : htmlStructure.hasEmbeddedForms ? 'warning' : 'pass',
     description: htmlStructure.hasEmbeddedForms
       ? hasExternalFormAction
-        ? 'Forms redirect to external domains'
-        : 'Forms are embedded on the page'
-      : 'No forms detected on this page',
+        ? 'Formulir mengarah ke domain eksternal'
+        : 'Formulir tersemat di halaman'
+      : 'Tidak ada formulir yang terdeteksi di halaman ini',
     evidence: htmlStructure.formActions.length > 0
       ? htmlStructure.formActions.join(', ')
       : undefined,
     recommendation: hasExternalFormAction
-      ? 'Embed forms directly on the landing page instead of redirecting'
+      ? 'Sematkan formulir langsung di landing page alih-alih melakukan redirect'
       : undefined,
     points: !hasExternalFormAction ? 10 : htmlStructure.hasEmbeddedForms ? 5 : 10
   })
 
   // Check 2: No excessive iframes
   requirements.push({
-    name: 'Minimal Iframe Usage',
+    name: 'Penggunaan Iframe Minimal',
     status: htmlStructure.iframes.length <= 2 ? 'pass' : 'warning',
-    description: `${htmlStructure.iframes.length} iframe(s) detected`,
+    description: `${htmlStructure.iframes.length} iframe terdeteksi`,
     recommendation: htmlStructure.iframes.length > 2
-      ? 'Reduce iframe usage for better performance and user experience'
+      ? 'Kurangi penggunaan iframe untuk performa dan pengalaman pengguna yang lebih baik'
       : undefined,
     points: htmlStructure.iframes.length <= 2 ? 5 : 2
   })
 
   // Check 3: No excessive external scripts
   requirements.push({
-    name: 'Script Optimization',
+    name: 'Optimasi Script',
     status: htmlStructure.externalScripts.length <= 10 ? 'pass' : 'warning',
-    description: `${htmlStructure.externalScripts.length} external script(s)`,
+    description: `${htmlStructure.externalScripts.length} script eksternal`,
     recommendation: htmlStructure.externalScripts.length > 10
-      ? 'Consider reducing external scripts for better performance'
+      ? 'Pertimbangkan untuk mengurangi script eksternal untuk performa yang lebih baik'
       : undefined,
     points: htmlStructure.externalScripts.length <= 10 ? 5 : 2
   })
@@ -279,7 +279,7 @@ function evaluateFormAndIntegration(htmlStructure: any): RequirementCategory {
   const totalPoints = requirements.reduce((sum, r) => sum + r.points, 0)
 
   return {
-    categoryName: 'Form & Third-Party Integration',
+    categoryName: 'Formulir & Integrasi Pihak Ketiga',
     passed,
     failed,
     warnings,
@@ -294,65 +294,65 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
 
   // Check 1: Has footer
   requirements.push({
-    name: 'Footer Present',
+    name: 'Footer Ada',
     status: htmlStructure.hasFooter ? 'pass' : 'warning',
     description: htmlStructure.hasFooter
-      ? 'Page has a footer section'
-      : 'No clear footer detected',
+      ? 'Halaman memiliki bagian footer'
+      : 'Tidak ada footer yang jelas terdeteksi',
     recommendation: !htmlStructure.hasFooter
-      ? 'Add a footer with company information and policy links'
+      ? 'Tambahkan footer dengan informasi perusahaan dan link kebijakan'
       : undefined,
     points: htmlStructure.hasFooter ? 5 : 2
   })
 
   // Check 2: Company information
   requirements.push({
-    name: 'Company Information',
+    name: 'Informasi Perusahaan',
     status: htmlStructure.hasCompanyInfo ? 'pass' : 'fail',
     description: htmlStructure.hasCompanyInfo
-      ? 'Company information found on page'
-      : 'No clear company information detected',
+      ? 'Informasi perusahaan ditemukan di halaman'
+      : 'Tidak ada informasi perusahaan yang jelas terdeteksi',
     recommendation: !htmlStructure.hasCompanyInfo
-      ? 'Add company name, contact details, and business information'
+      ? 'Tambahkan nama perusahaan, detail kontak, dan informasi bisnis'
       : undefined,
     points: htmlStructure.hasCompanyInfo ? 7 : 0
   })
 
   // Check 3: Privacy policy link
   requirements.push({
-    name: 'Privacy Policy Link',
+    name: 'Link Kebijakan Privasi',
     status: htmlStructure.hasPolicyLinks.privacy ? 'pass' : 'fail',
     description: htmlStructure.hasPolicyLinks.privacy
-      ? 'Privacy policy link found'
-      : 'No privacy policy link detected',
+      ? 'Link kebijakan privasi ditemukan'
+      : 'Tidak ada link kebijakan privasi terdeteksi',
     recommendation: !htmlStructure.hasPolicyLinks.privacy
-      ? 'Add a link to your privacy policy'
+      ? 'Tambahkan link ke kebijakan privasi Anda'
       : undefined,
     points: htmlStructure.hasPolicyLinks.privacy ? 5 : 0
   })
 
   // Check 4: Terms of service link
   requirements.push({
-    name: 'Terms of Service Link',
+    name: 'Link Syarat Ketentuan',
     status: htmlStructure.hasPolicyLinks.terms ? 'pass' : 'warning',
     description: htmlStructure.hasPolicyLinks.terms
-      ? 'Terms of service link found'
-      : 'No terms of service link detected',
+      ? 'Link syarat ketentuan ditemukan'
+      : 'Tidak ada link syarat ketentuan terdeteksi',
     recommendation: !htmlStructure.hasPolicyLinks.terms
-      ? 'Add a link to your terms of service'
+      ? 'Tambahkan link ke syarat ketentuan'
       : undefined,
     points: htmlStructure.hasPolicyLinks.terms ? 4 : 1
   })
 
   // Check 5: Contact information
   requirements.push({
-    name: 'Contact Information',
+    name: 'Informasi Kontak',
     status: htmlStructure.hasPolicyLinks.contact ? 'pass' : 'warning',
     description: htmlStructure.hasPolicyLinks.contact
-      ? 'Contact information/link found'
-      : 'No clear contact information detected',
+      ? 'Informasi/link kontak ditemukan'
+      : 'Tidak ada informasi kontak yang jelas terdeteksi',
     recommendation: !htmlStructure.hasPolicyLinks.contact
-      ? 'Add contact information or a contact page link'
+      ? 'Tambahkan informasi kontak atau link ke halaman kontak'
       : undefined,
     points: htmlStructure.hasPolicyLinks.contact ? 4 : 1
   })
@@ -363,7 +363,7 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
   const totalPoints = requirements.reduce((sum, r) => sum + r.points, 0)
 
   return {
-    categoryName: 'Footer & Company Information',
+    categoryName: 'Footer & Informasi Perusahaan',
     passed,
     failed,
     warnings,
