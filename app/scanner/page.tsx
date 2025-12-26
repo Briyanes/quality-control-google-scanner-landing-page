@@ -796,8 +796,8 @@ function ScannerContent() {
           </>
         )}
 
-        {/* Scan History */}
-        {history.length > 0 && (
+        {/* Scan History - HIDDEN */}
+        {false && history.length > 0 && (
           <div className="responsive-section scan-history-container" style={{
             backgroundColor: '#ffffff',
             borderRadius: '12px',
