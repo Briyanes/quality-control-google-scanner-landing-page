@@ -183,6 +183,19 @@ function ScannerContent() {
     }
   }
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pass':
+        return 'Lulus'
+      case 'fail':
+        return 'Gagal'
+      case 'warning':
+        return 'Peringatan'
+      default:
+        return status
+    }
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f9fafb, #ffffff, #f3f4f6)' }}>
       {/* Header */}
@@ -699,7 +712,7 @@ function ScannerContent() {
                                              req.status === 'fail' ? '#991b1b' :
                                              '#92400e'
                             }}>
-                              {req.status.toUpperCase()}
+                              {getStatusLabel(req.status)}
                             </span>
                           </div>
                           <p style={{
