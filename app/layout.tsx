@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/logo/logo-hadona.png', sizes: '512x512', type: 'image/png' }
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' }
     ],
     apple: [
-      { url: '/logo/logo-hadona.png', sizes: '180x180', type: 'image/png' }
+      { url: '/apple-icon.png', sizes: '512x512', type: 'image/png' }
     ],
   },
   openGraph: {
