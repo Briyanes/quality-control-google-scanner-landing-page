@@ -370,8 +370,8 @@ function ScannerContent() {
             marginBottom: '24px',
             lineHeight: '1.2'
           }}>
-            Google Ads Landing Page<br />
-            <span style={{ color: '#2563eb' }}>Quality Scanner</span>
+            Scanner Kepatuhan Landing Page<br />
+            <span style={{ color: '#2563eb' }}>Google Ads</span>
           </h1>
           <p style={{
             fontSize: '20px',
