@@ -320,7 +320,7 @@ a {
   .responsive-hero {
     padding: 32px 16px !important;
     margin-bottom: 32px !important;
-    margin-top: 24px !important;
+    margin-top: 20px !important;
   }
   
   .responsive-hero h1 {
@@ -938,7 +938,7 @@ a {
 
   .responsive-hero {
     padding: 24px 12px !important;
-    margin-top: 0px !important;
+    margin-top: 20px !important;
   }
 
   .responsive-hero h1 {
