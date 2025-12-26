@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 export default function HomePage() {
   const router = useRouter()
@@ -58,24 +59,26 @@ export default function HomePage() {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <div>
-            <h1 style={{
-              fontSize: '32px',
-              fontWeight: 'bold',
-              color: '#111827',
-              margin: 0,
-              marginBottom: '4px'
-            }}>
-              QC Landing Page Scanner
-            </h1>
-            <p style={{
-              fontSize: '14px',
-              color: '#6b7280',
-              margin: 0
-            }}>
-              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
-            </p>
-          </div>
+          <Link href="/home" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+            <div>
+              <h1 style={{
+                fontSize: '32px',
+                fontWeight: 'bold',
+                color: '#111827',
+                margin: 0,
+                marginBottom: '4px'
+              }}>
+                QC Landing Page Scanner
+              </h1>
+              <p style={{
+                fontSize: '14px',
+                color: '#6b7280',
+                margin: 0
+              }}>
+                Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+              </p>
+            </div>
+          </Link>
           <div style={{
             display: 'flex',
             alignItems: 'center',
