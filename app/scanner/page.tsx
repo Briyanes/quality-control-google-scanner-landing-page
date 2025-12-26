@@ -61,10 +61,10 @@ function ScannerContent() {
         setScanResult(data.scan)
         fetchHistory()
       } else {
-        setError(data.error || 'Failed to scan landing page')
+        setError(data.error || 'Gagal memindai landing page')
       }
     } catch (error) {
-      setError('Network error. Please try again.')
+      setError('Kesalahan jaringan. Silakan coba lagi.')
       console.error('Scan error:', error)
     } finally {
       setScanning(false)
@@ -90,7 +90,7 @@ function ScannerContent() {
     let targetUrl = urlToScan || url
 
     if (!targetUrl.trim()) {
-      setError('Please enter a URL')
+      setError('Silakan masukkan URL')
       return
     }
 
@@ -107,7 +107,7 @@ function ScannerContent() {
     try {
       new URL(targetUrl)
     } catch {
-      setError('Please enter a valid URL (e.g., https://example.com)')
+      setError('Silakan masukkan URL yang valid (contoh: https://example.com)')
       return
     }
 
@@ -128,10 +128,10 @@ function ScannerContent() {
         setScanResult(data.scan)
         fetchHistory()
       } else {
-        setError(data.error || 'Failed to scan landing page')
+        setError(data.error || 'Gagal memindai landing page')
       }
     } catch (error) {
-      setError('Network error. Please try again.')
+      setError('Kesalahan jaringan. Silakan coba lagi.')
       console.error('Scan error:', error)
     } finally {
       setScanning(false)
@@ -161,11 +161,11 @@ function ScannerContent() {
 
   const getGradeLabel = (grade: string) => {
     switch (grade) {
-      case 'A': return 'Excellent'
-      case 'B': return 'Good'
-      case 'C': return 'Fair'
-      case 'D': return 'Poor'
-      case 'F': return 'Fail'
+      case 'A': return 'Sangat Baik'
+      case 'B': return 'Baik'
+      case 'C': return 'Cukup'
+      case 'D': return 'Kurang'
+      case 'F': return 'Gagal'
       default: return 'N/A'
     }
   }
@@ -231,7 +231,7 @@ function ScannerContent() {
               color: '#6b7280',
               margin: 0
             }}>
-              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+              Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
             </p>
           </div>
 
@@ -312,7 +312,7 @@ function ScannerContent() {
         }}
       >
         <i className="bi bi-arrow-left"></i>
-        <span className="back-to-home-text">Back to Home</span>
+        <span className="back-to-home-text">Kembali ke Beranda</span>
       </button>
 
       {/* Main Content */}
@@ -350,7 +350,7 @@ function ScannerContent() {
             }}
           >
             <i className="bi bi-arrow-left"></i>
-            <span className="back-to-home-text">Back to Home</span>
+            <span className="back-to-home-text">Kembali ke Beranda</span>
           </button>
         </div>
 
@@ -380,7 +380,7 @@ function ScannerContent() {
             margin: '0 auto 32px auto',
             lineHeight: '1.6'
           }}>
-            Validate your landing pages against Google Ads requirements. Get instant feedback on compliance, content quality, and user experience.
+            Validasikan landing page Anda terhadap persyaratan Google Ads. Dapatkan umpan balik instan tentang kepatuhan, kualitas konten, dan pengalaman pengguna.
           </p>
 
           {/* URL Input */}
@@ -397,7 +397,7 @@ function ScannerContent() {
               <input
                 className="responsive-hero-input"
                 type="url"
-                placeholder="Enter landing page URL (e.g., https://example.com)"
+                placeholder="Masukkan URL landing page (contoh: https://example.com)"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -435,12 +435,12 @@ function ScannerContent() {
                 {scanning ? (
                   <>
                     <span className="loading" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></span>
-                    Scanning...
+                    Memindai...
                   </>
                 ) : (
                   <>
                     <i className="bi bi-rocket-takeoff"></i>
-                    Scan Now
+                    Mulai Scan
                   </>
                 )}
               </button>
@@ -488,7 +488,7 @@ function ScannerContent() {
                     color: '#111827',
                     margin: '0 0 8px 0'
                   }}>
-                    Scan Results
+                    Hasil Scan
                   </h3>
                   <p className="scan-result-url" style={{
                     fontSize: '14px',
@@ -519,7 +519,7 @@ function ScannerContent() {
                       color: '#6b7280',
                       marginTop: '4px'
                     }}>
-                      Score
+                      Skor
                     </div>
                   </div>
 
@@ -568,7 +568,7 @@ function ScannerContent() {
                       color: '#6b7280',
                       marginTop: '4px'
                     }}>
-                      Passed
+                      Lulus
                     </div>
                   </div>
 
@@ -590,7 +590,7 @@ function ScannerContent() {
                       color: '#6b7280',
                       marginTop: '4px'
                     }}>
-                      Failed
+                      Gagal
                     </div>
                   </div>
                 </div>
@@ -632,7 +632,7 @@ function ScannerContent() {
                       fontSize: '14px',
                       color: '#6b7280'
                     }}>
-                      Score: {category.totalPoints}/{category.maxPoints}
+                      Skor: {category.totalPoints}/{category.maxPoints}
                     </span>
                     <span className="category-passed" style={{
                       padding: '6px 12px',
@@ -642,7 +642,7 @@ function ScannerContent() {
                       backgroundColor: '#f3f4f6',
                       color: '#4b5563'
                     }}>
-                      {category.passed} passed
+                      {category.passed} lulus
                     </span>
                   </div>
                 </div>
@@ -732,7 +732,7 @@ function ScannerContent() {
                               color: '#1e40af'
                             }}>
                               <i className="bi bi-lightbulb" style={{ marginRight: '6px' }}></i>
-                              <strong>Recommendation:</strong> {req.recommendation}
+                              <strong>Rekomendasi:</strong> {req.recommendation}
                             </div>
                           )}
                         </div>
@@ -774,7 +774,7 @@ function ScannerContent() {
                 }}
               >
                 <i className="bi bi-arrow-clockwise"></i>
-                Scan Another URL
+                Scan URL Lain
               </button>
             </div>
           </>
@@ -795,7 +795,7 @@ function ScannerContent() {
               color: '#111827',
               marginBottom: '24px'
             }}>
-              Recent Scans
+              Scan Terbaru
             </h3>
 
             {/* Desktop Table */}
@@ -947,7 +947,7 @@ function ScannerContent() {
             color: '#6b7280',
             margin: '0 0 8px 0'
           }}>
-            <span className="footer-text-1">© 2025 Quality Control Scanner. Powered by</span>
+            <span className="footer-text-1">© 2025 Quality Control Scanner. Didukung oleh</span>
             <span className="footer-hadona" style={{ fontWeight: '600', color: '#2563eb', marginLeft: '4px' }}>
               Hadona Digital Media
             </span>
@@ -957,7 +957,7 @@ function ScannerContent() {
             color: '#9ca3af',
             margin: 0
           }}>
-            Designed & Developed by <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
+            Dirancang & Dikembangkan oleh <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
           </p>
         </div>
       </footer>
@@ -971,7 +971,7 @@ export default function ScannerPage() {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f9fafb' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: '48px', height: '48px', border: '4px solid #e5e7eb', borderTop: '4px solid #3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>Loading scanner...</p>
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>Memuat scanner...</p>
         </div>
         <style>{`
           @keyframes spin {

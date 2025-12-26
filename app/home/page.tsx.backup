@@ -73,7 +73,7 @@ export default function HomePage() {
               color: '#6b7280',
               margin: 0
             }}>
-              Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
             </p>
           </div>
           <div style={{
@@ -140,8 +140,8 @@ export default function HomePage() {
             marginBottom: '24px',
             lineHeight: '1.2'
           }}>
-            Validasikan Landing Page Anda<br />
-            <span style={{ color: '#2563eb' }}>Untuk Kepatuhan Google Ads</span>
+            Validate Your Landing Page<br />
+            <span style={{ color: '#2563eb' }}>For Google Ads Compliance</span>
           </h1>
           <p style={{
             fontSize: '20px',
@@ -150,8 +150,8 @@ export default function HomePage() {
             margin: '0 auto 32px auto',
             lineHeight: '1.6'
           }}>
-            Scan landing page Anda secara instan dan dapatkan laporan detail dengan analisis bertenaga AI.
-            Hindari penolakan dan pastikan iklan Anda berjalan lancar!
+            Scan your landing page instantly and get detailed report with AI-powered analysis.
+            Avoid disapproval and ensure your ads run smoothly!
           </p>
 
           {/* Quick Scan Input */}
@@ -168,7 +168,7 @@ export default function HomePage() {
               <input
                 className="responsive-hero-input"
                 type="url"
-                placeholder="Masukkan URL landing page Anda (cth: https://example.com)"
+                placeholder="Enter your landing page URL (e.g., https://example.com)"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyPress={(e) => {
@@ -204,7 +204,7 @@ export default function HomePage() {
                 }}
               >
                 <i className="bi bi-rocket-takeoff"></i>
-                Mulai Scan
+                Scan Now
               </button>
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
               color: '#4b5563',
               fontWeight: '600'
             }}>
-              Persyaratan Google Ads Diperiksa
+              Google Ads Requirements Checked
             </div>
           </div>
           <div style={{
@@ -262,7 +262,7 @@ export default function HomePage() {
               color: '#4b5563',
               fontWeight: '600'
             }}>
-              Rata-rata Waktu Scan
+              Average Scan Time
             </div>
           </div>
           <div style={{
@@ -286,7 +286,7 @@ export default function HomePage() {
               color: '#4b5563',
               fontWeight: '600'
             }}>
-              Skor Kepatuhan
+              Compliance Score
             </div>
           </div>
           <div style={{
@@ -310,7 +310,7 @@ export default function HomePage() {
               color: '#4b5563',
               fontWeight: '600'
             }}>
-              Gratis & Tanpa Batas
+              Free & Unlimited
             </div>
           </div>
         </div>
@@ -331,7 +331,7 @@ export default function HomePage() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            Yang Kami Periksa
+            What We Check
           </h2>
           <p style={{
             fontSize: '16px',
@@ -341,7 +341,7 @@ export default function HomePage() {
             maxWidth: '700px',
             margin: '0 auto 48px auto'
           }}>
-            Analisis komprehensif berdasarkan persyaratan Landing Page Google Ads
+            Comprehensive analysis based on Google Ads Landing Page requirements
           </p>
 
           <div className="responsive-grid-2" style={{
@@ -375,10 +375,10 @@ export default function HomePage() {
                 color: '#ffffff',
                 lineHeight: '1.8'
               }}>
-                <li>Verifikasi kepemilikan domain</li>
-                <li>Tidak ada redirect pihak ketiga</li>
-                <li>Pemeriksaan konsistensi URL</li>
-                <li>Analisis rantai redirect</li>
+                <li>Domain ownership verification</li>
+                <li>No third-party redirects</li>
+                <li>URL consistency check</li>
+                <li>Redirect chain analysis</li>
               </ul>
             </div>
 
@@ -400,7 +400,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-file-earmark-text" style={{ color: '#ffffff' }}></i>
-                Orisinalitas Konten
+                Content Originality
               </h3>
               <ul style={{
                 margin: 0,
@@ -408,10 +408,10 @@ export default function HomePage() {
                 color: '#ffffff',
                 lineHeight: '1.8'
               }}>
-                <li>Deteksi konten unik</li>
-                <li>Pemeriksaan duplikat bertenaga AI</li>
-                <li>Penilaian kualitas konten</li>
-                <li>Deteksi tidak ada arbitrase</li>
+                <li>Unique content detection</li>
+                <li>AI-powered duplicate check</li>
+                <li>Content quality assessment</li>
+                <li>No arbitrage detection</li>
               </ul>
             </div>
 
@@ -433,7 +433,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-input-cursor-text" style={{ color: '#ffffff' }}></i>
-                Integrasi Formulir
+                Form Integration
               </h3>
               <ul style={{
                 margin: 0,
@@ -441,10 +441,10 @@ export default function HomePage() {
                 color: '#ffffff',
                 lineHeight: '1.8'
               }}>
-                <li>Pemeriksaan formulir tersemat</li>
-                <li>Tidak ada redirect formulir eksternal</li>
-                <li>Validasi UX konsisten</li>
-                <li>Analisis aksi formulir</li>
+                <li>Embedded form check</li>
+                <li>No external form redirects</li>
+                <li>Consistent UX validation</li>
+                <li>Form action analysis</li>
               </ul>
             </div>
 
@@ -466,7 +466,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-building" style={{ color: '#ffffff' }}></i>
-                Footer & Perusahaan
+                Footer & Company
               </h3>
               <ul style={{
                 margin: 0,
@@ -474,10 +474,10 @@ export default function HomePage() {
                 color: '#ffffff',
                 lineHeight: '1.8'
               }}>
-                <li>Pemeriksaan keberadaan footer</li>
-                <li>Informasi perusahaan</li>
-                <li>Link kebijakan privasi</li>
-                <li>Link syarat ketentuan layanan</li>
+                <li>Footer presence check</li>
+                <li>Company information</li>
+                <li>Privacy policy link</li>
+                <li>Terms of service link</li>
               </ul>
             </div>
           </div>
@@ -499,7 +499,7 @@ export default function HomePage() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            Cara Kerja
+            How It Works
           </h2>
           <p style={{
             fontSize: '16px',
@@ -509,7 +509,7 @@ export default function HomePage() {
             maxWidth: '700px',
             margin: '0 auto 48px auto'
           }}>
-            Proses 4 langkah sederhana untuk memvalidasi landing page Anda
+            Simple 4-step process to validate your landing page
           </p>
 
           <div className="responsive-workflow" style={{
@@ -564,7 +564,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Masukkan URL
+                Enter URL
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -572,7 +572,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Tempel URL landing page yang ingin Anda validasi
+                Paste your landing page URL that you want to validate
               </p>
             </div>
 
@@ -626,7 +626,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Analisis AI
+                AI Analysis
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -634,7 +634,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                AI kami memindai LP Anda dan memeriksa semua persyaratan Google Ads
+                Our AI scans your LP and checks all Google Ads requirements
               </p>
             </div>
 
@@ -688,7 +688,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Dapatkan Laporan
+                Get Report
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -696,7 +696,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Terima skor (0-100), nilai (A-F), dan breakdown detail
+                Receive score (0-100), grade (A-F), and detailed breakdown
               </p>
             </div>
 
@@ -750,7 +750,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Perbaiki Masalah
+                Fix Issues
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -758,7 +758,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Ikuti rekomendasi untuk memperbaiki masalah dan meningkatkan kepatuhan
+                Follow recommendations to fix issues and improve compliance
               </p>
             </div>
           </div>
@@ -780,7 +780,7 @@ export default function HomePage() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            Yang Anda Dapatkan
+            What You Get
           </h2>
           <p style={{
             fontSize: '16px',
@@ -790,7 +790,7 @@ export default function HomePage() {
             maxWidth: '700px',
             margin: '0 auto 48px auto'
           }}>
-            Laporan komprehensif dengan wawasan yang dapat ditindaklanjuti
+            Comprehensive report with actionable insights
           </p>
 
           <div className="responsive-grid-2" style={{
@@ -820,7 +820,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Skor Keseluruhan
+                Overall Score
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -828,7 +828,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Dapatkan skor komprehensif berdasarkan semua persyaratan Google Ads
+                Get a comprehensive score based on all Google Ads requirements
               </p>
             </div>
 
@@ -854,7 +854,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Nilai Huruf
+                Letter Grade
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -862,7 +862,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Nilai yang mudah dipahami dari A (Sangat Baik) hingga F (Gagal)
+                Easy-to-understand grade from A (Excellent) to F (Fail)
               </p>
             </div>
 
@@ -886,7 +886,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Breakdown Kategori
+                Category Breakdown
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -894,7 +894,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Analisis detail untuk setiap kategori persyaratan
+                Detailed analysis for each requirement category
               </p>
             </div>
 
@@ -918,7 +918,7 @@ export default function HomePage() {
                 color: '#111827',
                 marginBottom: '8px'
               }}>
-                Rekomendasi
+                Recommendations
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -926,7 +926,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Langkah yang dapat ditindaklanjuti untuk memperbaiki masalah dan meningkatkan kepatuhan
+                Actionable steps to fix issues and improve compliance
               </p>
             </div>
           </div>
@@ -948,7 +948,7 @@ export default function HomePage() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            Mengapa Menggunakan Tool Ini?
+            Why Use This Tool?
           </h2>
           <p style={{
             fontSize: '16px',
@@ -958,7 +958,7 @@ export default function HomePage() {
             maxWidth: '700px',
             margin: '0 auto 48px auto'
           }}>
-            Hemat waktu dan hindari kesalahan mahal dengan kampanye Google Ads Anda
+            Save time and avoid costly mistakes with your Google Ads campaigns
           </p>
 
           <div className="responsive-grid-4" style={{
@@ -982,7 +982,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-lightning-fill" style={{ color: '#2563eb' }}></i>
-                Hasil Cepat
+                Fast Results
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -990,7 +990,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Dapatkan analisis komprehensif dalam hitungan detik, bukan jam
+                Get comprehensive analysis in seconds, not hours
               </p>
             </div>
 
@@ -1010,7 +1010,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-shield-check" style={{ color: '#10b981' }}></i>
-                Hindari Penolakan
+                Avoid Disapproval
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1018,7 +1018,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Tangkap masalah sebelum Google Ads meninjau landing page Anda
+                Catch issues before Google Ads reviews your landing page
               </p>
             </div>
 
@@ -1038,7 +1038,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-robot" style={{ color: '#9333ea' }}></i>
-                Analisis Bertenaga AI
+                AI-Powered Analysis
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1046,7 +1046,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                AI canggih menganalisis kualitas dan orisinalitas konten
+                Advanced AI analyzes content quality and originality
               </p>
             </div>
 
@@ -1066,7 +1066,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-wallet2" style={{ color: '#f59e0b' }}></i>
-                Gratis Digunakan
+                Free to Use
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1074,7 +1074,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Tool 100% gratis untuk memvalidasi landing page tanpa batas
+                100% free tool to validate unlimited landing pages
               </p>
             </div>
           </div>
@@ -1096,7 +1096,7 @@ export default function HomePage() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            Pertanyaan yang Sering Diajukan
+            Frequently Asked Questions
           </h2>
           <p style={{
             fontSize: '16px',
@@ -1104,7 +1104,7 @@ export default function HomePage() {
             textAlign: 'center',
             marginBottom: '48px'
           }}>
-            Semua yang perlu Anda ketahui tentang QC Scanner
+            Everything you need to know about the QC Scanner
           </p>
 
           <div className="responsive-faq" style={{
@@ -1128,7 +1128,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-question-circle" style={{ color: '#2563eb' }}></i>
-                Persyaratan Google Ads apa saja yang Anda periksa?
+                What Google Ads requirements do you check?
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1136,7 +1136,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Kami memeriksa kepemilikan domain, rantai redirect, orisinalitas konten, integrasi formulir, footer dengan info perusahaan, dan link halaman kebijakan - semua berdasarkan persyaratan resmi Google Ads.
+                We check domain ownership, redirect chains, content originality, form integration, footer with company info, and policy page links - all based on official Google Ads requirements.
               </p>
             </div>
 
@@ -1156,7 +1156,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-clock" style={{ color: '#10b981' }}></i>
-                Berapa lama waktu scan?
+                How long does a scan take?
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1164,7 +1164,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Sebagian besar scan selesai dalam 10-30 detik tergantung ukuran dan kompleksitas landing page. Analisis AI dilakukan secara real-time.
+                Most scans complete in 10-30 seconds depending on the landing page size and complexity. The AI analysis is done in real-time.
               </p>
             </div>
 
@@ -1184,7 +1184,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-graph-up" style={{ color: '#f59e0b' }}></i>
-                Apa artinya nilai tersebut?
+                What does the grade mean?
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1192,7 +1192,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Nilai A (90-100) = Sangat Baik, B (80-89) = Baik, C (70-79) = Cukup, D (60-69) = Kurang, F (0-59) = Gagal. Ikuti rekomendasi untuk meningkatkan nilai Anda.
+                Grade A (90-100) = Excellent, B (80-89) = Good, C (70-79) = Fair, D (60-69) = Poor, F (0-59) = Fail. Follow recommendations to improve your grade.
               </p>
             </div>
 
@@ -1212,7 +1212,7 @@ export default function HomePage() {
                 gap: '8px'
               }}>
                 <i className="bi bi-shield-lock" style={{ color: '#9333ea' }}></i>
-                Apakah data saya disimpan?
+                Is my data stored?
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1220,7 +1220,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Kami menyimpan hasil scan selama 24 jam untuk meningkatkan performa. Anda dapat menghapus riwayat scan kapan saja. Konten landing page Anda dianalisis secara aman.
+                We cache scan results for 24 hours to improve performance. You can delete your scan history anytime. Your landing page content is analyzed securely.
               </p>
             </div>
           </div>
@@ -1248,7 +1248,7 @@ export default function HomePage() {
               marginBottom: '24px',
               margin: '0 0 24px 0'
             }}>
-              Kepercayaan & Keamanan
+              Trust & Security
             </h3>
             <div style={{
               display: 'flex',
@@ -1268,13 +1268,13 @@ export default function HomePage() {
                     marginBottom: '4px',
                     fontSize: '14px'
                   }}>
-                    Aman & Privat
+                    Secure & Private
                   </div>
                   <div style={{
                     fontSize: '12px',
                     color: '#6b7280'
                   }}>
-                    Data Anda diproses secara aman
+                    Your data is processed securely
                   </div>
                 </div>
               </div>
@@ -1291,13 +1291,13 @@ export default function HomePage() {
                     marginBottom: '4px',
                     fontSize: '14px'
                   }}>
-                    Tidak Ada Penyimpanan Data
+                    No Data Storage
                   </div>
                   <div style={{
                     fontSize: '12px',
                     color: '#6b7280'
                   }}>
-                    File hanya diproses sesuai permintaan
+                    Files are processed on-demand only
                   </div>
                 </div>
               </div>
@@ -1314,13 +1314,13 @@ export default function HomePage() {
                     marginBottom: '4px',
                     fontSize: '14px'
                   }}>
-                    Didukung oleh <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+                    Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
                   </div>
                   <div style={{
                     fontSize: '12px',
                     color: '#6b7280'
                   }}>
-                    Agensi pemasaran digital terpercaya
+                    Trusted digital marketing agency
                   </div>
                 </div>
               </div>
@@ -1342,7 +1342,7 @@ export default function HomePage() {
               marginBottom: '24px',
               margin: '0 0 24px 0'
             }}>
-              Butuh Bantuan?
+              Need Help?
             </h3>
             <div style={{
               display: 'flex',
@@ -1363,7 +1363,7 @@ export default function HomePage() {
                       marginBottom: '4px',
                       fontSize: '14px'
                     }}>
-                      Dukungan Email
+                      Email Support
                     </div>
                     <div style={{
                       fontSize: '12px',
@@ -1417,7 +1417,7 @@ export default function HomePage() {
               marginBottom: '24px',
               margin: '0 0 24px 0'
             }}>
-              Ikuti Kami
+              Follow Us
             </h3>
             <div style={{
               display: 'flex',
@@ -1438,7 +1438,7 @@ export default function HomePage() {
                       marginBottom: '4px',
                       fontSize: '14px'
                     }}>
-                      Media Sosial
+                      Social Media
                     </div>
                     <div style={{
                       fontSize: '12px',
@@ -1544,7 +1544,7 @@ export default function HomePage() {
             color: '#ffffff',
             marginBottom: '16px'
           }}>
-            Siap Memvalidasi Landing Page Anda?
+            Ready to Validate Your Landing Page?
           </h2>
           <p className="cta-description-single-line" style={{
             fontSize: '18px',
@@ -1553,7 +1553,7 @@ export default function HomePage() {
             margin: '0 auto 32px auto',
             lineHeight: '1.6'
           }}>
-            Mulai scan sekarang dan pastikan kampanye Google Ads Anda berjalan lancar tanpa masalah kepatuhan
+            Start scanning now and ensure your Google Ads campaigns run smoothly without compliance issues
           </p>
           <button
             className="responsive-cta-button"
@@ -1578,7 +1578,7 @@ export default function HomePage() {
             }}
           >
             <i className="bi bi-rocket-takeoff" style={{ marginRight: '8px' }}></i>
-            Mulai Scan Sekarang
+            Start Scanning Now
           </button>
         </div>
       </main>
@@ -1600,7 +1600,7 @@ export default function HomePage() {
             color: '#6b7280',
             margin: '0 0 8px 0'
           }}>
-            <span>© 2025 QC Landing Page Scanner. Didukung oleh</span>
+            <span>© 2025 QC Landing Page Scanner. Powered by</span>
             <span style={{ fontWeight: '600', color: '#2563eb', marginLeft: '4px' }}>
               Hadona Digital Media
             </span>
@@ -1610,7 +1610,7 @@ export default function HomePage() {
             color: '#9ca3af',
             margin: 0
           }}>
-            Dirancang & Dikembangkan oleh <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
+            Designed & Developed by <span style={{ fontWeight: '600', color: '#6b7280' }}>Briyanes</span>
           </p>
         </div>
       </footer>

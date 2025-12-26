@@ -6,9 +6,9 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://qcscanner.hadona.id'),
-  title: 'Quality Control Scanner - Hadona',
-  description: 'Scan landing pages for Google Ads compliance. Validate your landing pages against Google Ads requirements with AI-powered analysis.',
-  keywords: ['Google Ads', 'Landing Page', 'Quality Control', 'Scanner', 'Compliance', 'Ads Policy'],
+  title: 'Scanner QC Landing Page - Hadona',
+  description: 'Scan landing page untuk kepatuhan Google Ads. Validasikan landing page Anda terhadap persyaratan Google Ads dengan analisis berbasis AI.',
+  keywords: ['Google Ads', 'Landing Page', 'Quality Control', 'Scanner', 'Kepatuhan', 'Kebijakan Iklan'],
   authors: [{ name: 'Hadona' }],
   creator: 'Hadona',
   publisher: 'Hadona',
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Quality Control Scanner - Hadona',
-    description: 'Scan landing pages for Google Ads compliance',
+    title: 'Scanner QC Landing Page - Hadona',
+    description: 'Scan landing page untuk kepatuhan Google Ads',
     url: 'https://qcscanner.hadona.id',
     siteName: 'QC Scanner',
     images: [{
