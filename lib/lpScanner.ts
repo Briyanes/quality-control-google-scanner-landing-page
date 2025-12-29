@@ -251,14 +251,14 @@ function evaluateFormAndIntegration(htmlStructure: any): RequirementCategory {
     status: !hasExternalFormAction ? 'pass' : htmlStructure.hasEmbeddedForms ? 'warning' : 'pass',
     description: htmlStructure.hasEmbeddedForms
       ? hasExternalFormAction
-        ? 'Formulir mengarah ke domain eksternal'
-        : 'Formulir tersemat di halaman'
-      : 'Tidak ada formulir yang terdeteksi di halaman ini',
+        ? 'Form mengarah ke website lain'
+        : 'Form ada di halaman ini'
+      : 'Tidak ada form',
     evidence: htmlStructure.formActions.length > 0
       ? htmlStructure.formActions.join(', ')
       : undefined,
     recommendation: hasExternalFormAction
-      ? 'Sematkan formulir langsung di landing page alih-alih melakukan redirect'
+      ? 'Taruh form langsung di halaman, jangan redirect ke lain'
       : undefined,
     points: !hasExternalFormAction ? 10 : htmlStructure.hasEmbeddedForms ? 5 : 10
   })
@@ -267,9 +267,9 @@ function evaluateFormAndIntegration(htmlStructure: any): RequirementCategory {
   requirements.push({
     name: 'Penggunaan Iframe Minimal',
     status: htmlStructure.iframes.length <= 2 ? 'pass' : 'warning',
-    description: `${htmlStructure.iframes.length} iframe terdeteksi`,
+    description: `${htmlStructure.iframes.length} iframe`,
     recommendation: htmlStructure.iframes.length > 2
-      ? 'Kurangi penggunaan iframe untuk performa dan pengalaman pengguna yang lebih baik'
+      ? 'Kurangi iframe, max 2 saja'
       : undefined,
     points: htmlStructure.iframes.length <= 2 ? 5 : 2
   })
@@ -278,9 +278,9 @@ function evaluateFormAndIntegration(htmlStructure: any): RequirementCategory {
   requirements.push({
     name: 'Optimasi Script',
     status: htmlStructure.externalScripts.length <= 10 ? 'pass' : 'warning',
-    description: `${htmlStructure.externalScripts.length} script eksternal`,
+    description: `${htmlStructure.externalScripts.length} script luar`,
     recommendation: htmlStructure.externalScripts.length > 10
-      ? 'Pertimbangkan untuk mengurangi script eksternal untuk performa yang lebih baik'
+      ? 'Kurangi script eksternal, biar cepat'
       : undefined,
     points: htmlStructure.externalScripts.length <= 10 ? 5 : 2
   })
@@ -309,10 +309,10 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
     name: 'Footer Ada',
     status: htmlStructure.hasFooter ? 'pass' : 'warning',
     description: htmlStructure.hasFooter
-      ? 'Halaman memiliki bagian footer'
-      : 'Tidak ada footer yang jelas terdeteksi',
+      ? 'Footer ada'
+      : 'Footer tidak ditemukan',
     recommendation: !htmlStructure.hasFooter
-      ? 'Tambahkan footer dengan informasi perusahaan dan link kebijakan'
+      ? 'Tambah footer di bawah halaman'
       : undefined,
     points: htmlStructure.hasFooter ? 5 : 2
   })
@@ -322,10 +322,10 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
     name: 'Informasi Perusahaan',
     status: htmlStructure.hasCompanyInfo ? 'pass' : 'fail',
     description: htmlStructure.hasCompanyInfo
-      ? 'Informasi perusahaan ditemukan di halaman'
-      : 'Tidak ada informasi perusahaan yang jelas terdeteksi',
+      ? 'Info perusahaan lengkap'
+      : 'Info perusahaan kurang',
     recommendation: !htmlStructure.hasCompanyInfo
-      ? 'Tambahkan nama perusahaan, detail kontak, dan informasi bisnis'
+      ? 'Tambah nama toko, alamat, dan kontak'
       : undefined,
     points: htmlStructure.hasCompanyInfo ? 7 : 0
   })
@@ -335,10 +335,10 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
     name: 'Link Kebijakan Privasi',
     status: htmlStructure.hasPolicyLinks.privacy ? 'pass' : 'fail',
     description: htmlStructure.hasPolicyLinks.privacy
-      ? 'Link kebijakan privasi ditemukan'
-      : 'Tidak ada link kebijakan privasi terdeteksi',
+      ? 'Link privacy policy ada'
+      : 'Link privacy policy tidak ada',
     recommendation: !htmlStructure.hasPolicyLinks.privacy
-      ? 'Tambahkan link ke kebijakan privasi Anda'
+      ? 'Tambah link "Privacy Policy" di footer'
       : undefined,
     points: htmlStructure.hasPolicyLinks.privacy ? 5 : 0
   })
@@ -348,10 +348,10 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
     name: 'Link Syarat Ketentuan',
     status: htmlStructure.hasPolicyLinks.terms ? 'pass' : 'warning',
     description: htmlStructure.hasPolicyLinks.terms
-      ? 'Link syarat ketentuan ditemukan'
-      : 'Tidak ada link syarat ketentuan terdeteksi',
+      ? 'Link terms & conditions ada'
+      : 'Link terms & conditions tidak ada',
     recommendation: !htmlStructure.hasPolicyLinks.terms
-      ? 'Tambahkan link ke syarat ketentuan'
+      ? 'Tambah link "Terms & Conditions" di footer'
       : undefined,
     points: htmlStructure.hasPolicyLinks.terms ? 4 : 1
   })
@@ -361,10 +361,10 @@ function evaluateFooterAndCompany(htmlStructure: any): RequirementCategory {
     name: 'Informasi Kontak',
     status: htmlStructure.hasPolicyLinks.contact ? 'pass' : 'warning',
     description: htmlStructure.hasPolicyLinks.contact
-      ? 'Informasi/link kontak ditemukan'
-      : 'Tidak ada informasi kontak yang jelas terdeteksi',
+      ? 'Info kontak ada'
+      : 'Info kontak tidak jelas',
     recommendation: !htmlStructure.hasPolicyLinks.contact
-      ? 'Tambahkan informasi kontak atau link ke halaman kontak'
+      ? 'Tambah link "Contact" atau halaman kontak'
       : undefined,
     points: htmlStructure.hasPolicyLinks.contact ? 4 : 1
   })
