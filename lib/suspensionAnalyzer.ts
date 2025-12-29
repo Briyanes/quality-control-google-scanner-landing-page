@@ -1,5 +1,15 @@
 import { RedirectStep } from './types'
 import { extractDomain } from './redirectChecker'
+import {
+  trackImageHashes,
+  checkImageReuse,
+  trackDomainUsage,
+  checkDuplicateDomain,
+  extractEmailsFromPage,
+  trackEmailUsage,
+  checkEmailReuse
+} from './suspensionDatabase'
+import { generateImageHashes, findDuplicateImages } from './imageAnalyzer'
 
 /**
  * Suspension Analyzer - Tier 1, 2, and 3 checks for Google Ads suspension risks
@@ -93,7 +103,7 @@ export async function analyzeSuspensionRisk(
   const imageUrls = extractImageUrls(html)
 
   // Tier 1: Rule-based checks (always available)
-  const multipleAccountAbuse = await analyzeMultipleAccountAbuseTier1(
+  let multipleAccountAbuse = await analyzeMultipleAccountAbuseTier1(
     redirectChain,
     url
   )
@@ -114,10 +124,53 @@ export async function analyzeSuspensionRisk(
     imageUrls
   )
 
-  const counterfeitGoods = await analyzeCounterfeitGoodsTier1(
+  let counterfeitGoods = await analyzeCounterfeitGoodsTier1(
     html,
     textContent
   )
+
+  // Tier 2: Database-dependent checks (try-catch for graceful degradation)
+  try {
+    // Generate a temporary scan ID (will be replaced by real ID when saving to DB)
+    const tempScanId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
+    // 1. Track and check image hashes
+    const imageHashes = await generateImageHashes(imageUrls)
+    await trackImageHashes(tempScanId, imageHashes)
+
+    const hashStrings = imageHashes.map(h => h.hash)
+    const imageReuseResults = await checkImageReuse(hashStrings)
+
+    // 2. Track and check domain usage
+    const domain = extractDomain(url)
+    await trackDomainUsage(tempScanId, domain, contentAnalysis.businessContext || 'landing page')
+
+    const domainResults = await checkDuplicateDomain(domain)
+
+    // 3. Track and check email usage
+    const emails = extractEmailsFromPage(html)
+    if (emails.length > 0) {
+      await trackEmailUsage(tempScanId, emails)
+    }
+
+    const emailResults = await checkEmailReuse(emails)
+
+    // Update Tier 1 results with Tier 2 findings
+    multipleAccountAbuse = enrichMultipleAccountAbuseWithTier2(
+      multipleAccountAbuse,
+      imageReuseResults,
+      domainResults,
+      emailResults
+    )
+
+    counterfeitGoods = enrichCounterfeitGoodsWithTier2(
+      counterfeitGoods,
+      imageReuseResults
+    )
+  } catch (error) {
+    console.log('Tier 2 checks unavailable (database or storage issue):', error)
+    // Continue with Tier 1 results only
+  }
 
   return {
     multipleAccountAbuse,
@@ -131,6 +184,53 @@ export async function analyzeSuspensionRisk(
 // ============================================================================
 // Tier 1: Rule-Based Checks
 // ============================================================================
+
+// Helper functions to enrich Tier 1 with Tier 2 results
+function enrichMultipleAccountAbuseWithTier2(
+  tier1: any,
+  imageReuse: any[],
+  domainResults: any[],
+  emailResults: any[]
+): any {
+  const hasSameImages = imageReuse.length > 0
+  const hasSameDomain = domainResults.length > 0 && domainResults[0].scanCount > 1
+  const hasSameEmail = emailResults.length > 0 && emailResults[0].scanCount > 1
+
+  const hasPattern = tier1.hasPattern || hasSameImages || hasSameDomain || hasSameEmail
+
+  const evidenceParts: string[] = []
+  if (tier1.evidence) evidenceParts.push(tier1.evidence)
+  if (hasSameImages) evidenceParts.push(`${imageReuse.length} gambar duplikat ditemukan`)
+  if (hasSameDomain) evidenceParts.push(`Domain dipakai ${domainResults[0].scanCount} kali`)
+  if (hasSameEmail) evidenceParts.push(`${emailResults.length} email duplikat ditemukan`)
+
+  return {
+    ...tier1,
+    hasPattern,
+    sameImagesDetected: hasSameImages,
+    sameDomainDetected: hasSameDomain,
+    sameEmailDetected: hasSameEmail,
+    evidence: evidenceParts.length > 0 ? evidenceParts.join('. ') : tier1.evidence
+  }
+}
+
+function enrichCounterfeitGoodsWithTier2(
+  tier1: any,
+  imageReuse: any[]
+): any {
+  // Tier 2 can help detect counterfeit goods by finding duplicate brand images
+  // For now, we'll just add evidence if found
+  const evidenceParts = tier1.evidence || []
+
+  if (imageReuse.length > 0) {
+    evidenceParts.push(`${imageReuse.length} gambar duplikat terdeteksi di database`)
+  }
+
+  return {
+    ...tier1,
+    evidence: evidenceParts.length > 0 ? evidenceParts : undefined
+  }
+}
 
 // 1. Multiple Account Abuse - Tier 1 (what we can detect without database)
 async function analyzeMultipleAccountAbuseTier1(
