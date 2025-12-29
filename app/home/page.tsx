@@ -234,14 +234,14 @@ export default function HomePage() {
               color: '#2563eb',
               marginBottom: '8px'
             }}>
-              50+
+              150+
             </div>
             <div style={{
               fontSize: '16px',
               color: '#4b5563',
               fontWeight: '600'
             }}>
-              Persyaratan Google Ads Diperiksa
+              Poin Persyaratan Dicek
             </div>
           </div>
           <div style={{
@@ -347,10 +347,10 @@ export default function HomePage() {
             Analisis komprehensif berdasarkan persyaratan Landing Page Google Ads
           </p>
 
-          <div className="responsive-grid-2" style={{
+          <div className="responsive-grid-checks" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '32px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '24px'
           }}>
             {/* Domain & Redirect */}
             <div style={{
@@ -481,6 +481,40 @@ export default function HomePage() {
                 <li>Informasi perusahaan</li>
                 <li>Link kebijakan privasi</li>
                 <li>Link syarat ketentuan layanan</li>
+              </ul>
+            </div>
+
+            {/* Suspension Risk */}
+            <div style={{
+              padding: '28px',
+              backgroundColor: '#dc2626',
+              borderRadius: '12px',
+              border: '2px solid #dc2626',
+              transition: 'all 0.3s ease'
+            }}>
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: '#ffffff',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <i className="bi bi-exclamation-triangle" style={{ color: '#ffffff' }}></i>
+                Kepatuhan Kebijakan Google Ads
+              </h3>
+              <ul style={{
+                margin: 0,
+                paddingLeft: '20px',
+                color: '#ffffff',
+                lineHeight: '1.8'
+              }}>
+                <li>Deteksi pola multi-account abuse</li>
+                <li>Cek praktik bisnis tidak dapat diterima</li>
+                <li>Deteksi impersonasi figur publik</li>
+                <li>Analisis teknik circumventing</li>
+                <li>Deteksi barang palsu/konten ilegal</li>
               </ul>
             </div>
           </div>
@@ -1139,7 +1173,7 @@ export default function HomePage() {
                 margin: 0,
                 lineHeight: '1.6'
               }}>
-                Kami memeriksa kepemilikan domain, rantai redirect, orisinalitas konten, integrasi formulir, footer dengan info perusahaan, dan link halaman kebijakan - semua berdasarkan persyaratan resmi Google Ads.
+                Kami memeriksa 5 kategori: Domain & Redirect, Orisinalitas Konten, Integrasi Formulir, Footer & Perusahaan, dan Kepatuhan Kebijakan Google Ads (termasuk deteksi suspend seperti multi-account abuse, barang ilegal, impersonasi, dll).
               </p>
             </div>
 
@@ -1224,6 +1258,34 @@ export default function HomePage() {
                 lineHeight: '1.6'
               }}>
                 Kami menyimpan hasil scan selama 24 jam untuk meningkatkan performa. Anda dapat menghapus riwayat scan kapan saja. Konten landing page Anda dianalisis secara aman.
+              </p>
+            </div>
+
+            <div style={{
+              padding: '24px',
+              backgroundColor: '#f9fafb',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb'
+            }}>
+              <h3 style={{
+                fontWeight: '600',
+                color: '#111827',
+                marginBottom: '12px',
+                fontSize: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <i className="bi bi-exclamation-triangle" style={{ color: '#dc2626' }}></i>
+                Apa itu deteksi risiko suspend Google Ads?
+              </h3>
+              <p style={{
+                fontSize: '14px',
+                color: '#4b5563',
+                margin: 0,
+                lineHeight: '1.6'
+              }}>
+                Fitur baru kami mendeteksi 5 jenis pelanggaran umum yang menyebabkan suspend: multi-account abuse, praktik bisnis tidak dapat diterima (barang ilegal, senjata), impersonasi figur publik, teknik circumventing (cloaking, hidden URLs), dan barang palsu/konten ilegal.
               </p>
             </div>
           </div>
