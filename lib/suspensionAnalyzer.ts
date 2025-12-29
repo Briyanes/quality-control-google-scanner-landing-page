@@ -10,6 +10,16 @@ import {
   checkEmailReuse
 } from './suspensionDatabase'
 import { generateImageHashes, findDuplicateImages } from './imageAnalyzer'
+import {
+  analyzeImagesWithVisionAI,
+  analyzeContentWithTextAI,
+  detectBodyOrgansInImages,
+  detectMedicalImageryInImages,
+  detectBrandLogosInImages,
+  detectFakeBrandAffiliation,
+  assessCompanyInfoSufficiency,
+  getAIConfig
+} from './suspensionAI'
 
 /**
  * Suspension Analyzer - Tier 1, 2, and 3 checks for Google Ads suspension risks
@@ -102,19 +112,22 @@ export async function analyzeSuspensionRisk(
   const textContent = extractTextContent(html)
   const imageUrls = extractImageUrls(html)
 
+  // Get AI configuration
+  const { apiKey: aiApiKey, apiUrl: aiApiUrl } = getAIConfig()
+
   // Tier 1: Rule-based checks (always available)
   let multipleAccountAbuse = await analyzeMultipleAccountAbuseTier1(
     redirectChain,
     url
   )
 
-  const unacceptableBusinessPractice = await analyzeUnacceptableBusinessPracticeTier1(
+  let unacceptableBusinessPractice = await analyzeUnacceptableBusinessPracticeTier1(
     html,
     textContent,
     url
   )
 
-  const publicFigureImpersonation = await analyzePublicFigureImpersonationTier1(
+  let publicFigureImpersonation = await analyzePublicFigureImpersonationTier1(
     html,
     textContent
   )
@@ -170,6 +183,81 @@ export async function analyzeSuspensionRisk(
   } catch (error) {
     console.log('Tier 2 checks unavailable (database or storage issue):', error)
     // Continue with Tier 1 results only
+  }
+
+  // Tier 3: AI-dependent checks (try-catch for graceful degradation)
+  try {
+    // Vision AI analysis for images
+    if (imageUrls.length > 0 && aiApiKey && aiApiUrl) {
+      const visionResult = await analyzeImagesWithVisionAI(imageUrls, aiApiKey, aiApiUrl)
+
+      // Update unacceptableBusinessPractice with AI findings
+      if (visionResult.hasBodyOrgans) {
+        unacceptableBusinessPractice.bodyOrganImages = true
+        if (!unacceptableBusinessPractice.evidence) {
+          unacceptableBusinessPractice.evidence = []
+        }
+        unacceptableBusinessPractice.evidence.push('Gambar organ tubuh terdeteksi oleh AI')
+      }
+
+      if (visionResult.hasMedicalImagery) {
+        unacceptableBusinessPractice.medicalImagery = true
+        if (!unacceptableBusinessPractice.evidence) {
+          unacceptableBusinessPractice.evidence = []
+        }
+        unacceptableBusinessPractice.evidence.push('Imaji medis terdeteksi oleh AI')
+      }
+
+      // Update counterfeitGoods with AI findings
+      if (visionResult.hasBrandLogos) {
+        counterfeitGoods.brandLogos = true
+        counterfeitGoods.detectedBrands.push(...visionResult.detectedBrands)
+        if (!counterfeitGoods.evidence) {
+          counterfeitGoods.evidence = []
+        }
+        counterfeitGoods.evidence.push(`Logo brand terdeteksi: ${visionResult.detectedBrands.join(', ')}`)
+      }
+
+      // Update publicFigureImpersonation with AI findings
+      if (visionResult.hasPublicFigures) {
+        publicFigureImpersonation.detected = true
+        publicFigureImpersonation.publicFigures.push(...visionResult.detectedFigures)
+        if (!publicFigureImpersonation.evidence) {
+          publicFigureImpersonation.evidence = ''
+        }
+        publicFigureImpersonation.evidence += ` Figur publik terdeteksi oleh AI: ${visionResult.detectedFigures.join(', ')}`
+      }
+    }
+
+    // Text AI analysis for content
+    if (aiApiKey && aiApiUrl) {
+      const textResult = await analyzeContentWithTextAI(html, textContent, url, aiApiKey, aiApiUrl)
+
+      // Update unacceptableBusinessPractice with AI findings
+      if (textResult.hasFakeBrandAffiliation) {
+        unacceptableBusinessPractice.fakeBrandAffiliation = true
+        if (!unacceptableBusinessPractice.evidence) {
+          unacceptableBusinessPractice.evidence = []
+        }
+        unacceptableBusinessPractice.evidence.push('Afiliasi brand palsu terdeteksi oleh AI')
+      }
+
+      if (textResult.hasInsufficientCompanyInfo) {
+        unacceptableBusinessPractice.insufficientCompanyInfo = true
+        if (!unacceptableBusinessPractice.evidence) {
+          unacceptableBusinessPractice.evidence = []
+        }
+        unacceptableBusinessPractice.evidence.push('Info perusahaan kurang lengkap (AI analysis)')
+      }
+
+      // Update counterfeitGoods with AI findings
+      if (textResult.detectedBrands.length > 0) {
+        counterfeitGoods.detectedBrands.push(...textResult.detectedBrands)
+      }
+    }
+  } catch (error) {
+    console.log('Tier 3 checks unavailable (AI service issue):', error)
+    // Continue with Tier 1 + Tier 2 results only
   }
 
   return {
