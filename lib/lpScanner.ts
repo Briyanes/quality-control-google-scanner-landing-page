@@ -172,13 +172,13 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
 
   // Check 2: No arbitrage
   requirements.push({
-    name: 'Tidak Ada Arbitrase Iklan',
+    name: 'Keseimbangan Konten & Iklan',
     status: !contentAnalysis.hasArbitragePattern ? 'pass' : 'fail',
     description: contentAnalysis.hasArbitragePattern
-      ? 'Iklan lebih banyak daripada konten'
+      ? 'Iklan terlalu banyak, konten kurang'
       : 'Konten lebih banyak dari iklan',
     recommendation: contentAnalysis.hasArbitragePattern
-      ? 'Kurangi iklan dan tambahkan lebih banyak konten orisinal'
+      ? 'Kurangi iklan, tambah teks produk'
       : undefined,
     points: !contentAnalysis.hasArbitragePattern ? 8 : 0
   })
