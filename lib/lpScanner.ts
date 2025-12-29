@@ -103,10 +103,10 @@ function evaluateDomainAndRedirect(
     name: 'URL Tujuan Cocok',
     status: url === finalUrl ? 'pass' : 'warning',
     description: url === finalUrl
-      ? 'URL tampilan cocok dengan URL final'
-      : `Redirect dari ${url} ke ${finalUrl}`,
+      ? 'URL sesuai, tidak ada redirect'
+      : `URL redirect ke ${finalUrl}`,
     recommendation: url !== finalUrl
-      ? 'Pertimbangkan untuk menggunakan URL final secara langsung untuk meningkatkan pengalaman pengguna'
+      ? 'Pakai URL final langsung, jangan redirect'
       : undefined,
     points: url === finalUrl ? 10 : 5
   })
@@ -117,13 +117,13 @@ function evaluateDomainAndRedirect(
     name: 'Tidak Ada Redirect Pihak Ketiga',
     status: hasThirdParty ? 'fail' : 'pass',
     description: hasThirdParty
-      ? 'Rantai redirect mencakup domain pihak ketiga'
-      : 'Semua redirect berada dalam domain yang sama',
+      ? 'Redirect ke domain lain'
+      : 'Tidak redirect ke domain lain',
     evidence: hasThirdParty
       ? redirectChain.map(r => r.url).join(' → ')
       : undefined,
     recommendation: hasThirdParty
-      ? 'Hapus redirect pihak ketiga untuk mematuhi kebijakan Google Ads'
+      ? 'Hapus redirect ke domain lain, ini langgar Google Ads'
       : undefined,
     points: hasThirdParty ? 0 : 10
   })
@@ -133,9 +133,9 @@ function evaluateDomainAndRedirect(
   requirements.push({
     name: 'Jumlah Redirect Wajar',
     status: redirectCount <= 2 ? 'pass' : redirectCount <= 5 ? 'warning' : 'fail',
-    description: `${redirectCount} redirect terdeteksi`,
+    description: `${redirectCount} kali redirect`,
     recommendation: redirectCount > 2
-      ? 'Kurangi jumlah redirect untuk meningkatkan kecepatan load halaman'
+      ? 'Kurangi redirect, max 2 kali saja'
       : undefined,
     points: redirectCount <= 2 ? 5 : redirectCount <= 5 ? 3 : 0
   })
@@ -163,9 +163,9 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
   requirements.push({
     name: 'Konten Substansial',
     status: contentAnalysis.hasSubstantialContent ? 'pass' : 'fail',
-    description: `${contentAnalysis.textLength} karakter teks terlihat`,
+    description: `${contentAnalysis.textLength} karakter teks`,
     recommendation: !contentAnalysis.hasSubstantialContent
-      ? 'Tambahkan konten yang lebih bermakna untuk memberikan nilai kepada pengunjung'
+      ? 'Tulis minimal 500 karakter teks penjelasan'
       : undefined,
     points: contentAnalysis.hasSubstantialContent ? 8 : 0
   })
@@ -175,8 +175,8 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
     name: 'Tidak Ada Arbitrase Iklan',
     status: !contentAnalysis.hasArbitragePattern ? 'pass' : 'fail',
     description: contentAnalysis.hasArbitragePattern
-      ? 'Halaman tampak memiliki lebih banyak iklan daripada konten'
-      : 'Keseimbangan yang baik antara konten dan iklan',
+      ? 'Iklan lebih banyak daripada konten'
+      : 'Konten lebih banyak dari iklan',
     recommendation: contentAnalysis.hasArbitragePattern
       ? 'Kurangi iklan dan tambahkan lebih banyak konten orisinal'
       : undefined,
@@ -187,9 +187,9 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
   requirements.push({
     name: 'Kepadatan Konten',
     status: contentAnalysis.textToHTMLRatio > 0.15 ? 'pass' : 'warning',
-    description: `Rasio teks ke HTML: ${(contentAnalysis.textToHTMLRatio * 100).toFixed(1)}%`,
+    description: `Rasio teks: ${(contentAnalysis.textToHTMLRatio * 100).toFixed(0)}%`,
     recommendation: contentAnalysis.textToHTMLRatio <= 0.15
-      ? 'Tingkatkan rasio konten-ke-kode untuk SEO yang lebih baik'
+      ? 'Tambah teks, kurangi kode HTML'
       : undefined,
     points: contentAnalysis.textToHTMLRatio > 0.15 ? 7 : 3
   })
@@ -393,11 +393,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Pola Multi-Account',
     status: !suspensionAnalysis.multipleAccountAbuse.hasPattern ? 'pass' : 'fail',
     description: suspensionAnalysis.multipleAccountAbuse.hasPattern
-      ? 'Terdeteksi pola penggunaan multi-account abuse'
-      : 'Tidak ada indikasi multi-account abuse',
+      ? 'Domain baru redirect ke domain lama'
+      : 'Akun aman, tidak ada pola multi-account',
     evidence: suspensionAnalysis.multipleAccountAbuse.evidence,
     recommendation: suspensionAnalysis.multipleAccountAbuse.hasPattern
-      ? 'Hindari penggunaan domain baru yang redirect ke domain lama, dan pastikan setiap akun memiliki identitas yang unik'
+      ? 'Gunakan domain langsung, jangan redirect ke domain lama'
       : undefined,
     points: !suspensionAnalysis.multipleAccountAbuse.hasPattern ? 10 : 0
   })
@@ -408,10 +408,10 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada Barang Ilegal',
     status: !suspensionAnalysis.unacceptableBusinessPractice.weaponsIllegalGoods ? 'pass' : 'fail',
     description: suspensionAnalysis.unacceptableBusinessPractice.weaponsIllegalGoods
-      ? 'Konten terkait senjata atau barang ilegal terdeteksi'
-      : 'Tidak ada konten senjata atau barang ilegal',
+      ? 'Ditemukan kata kunci senjata/barang ilegal'
+      : 'Tidak menjual barang ilegal',
     recommendation: suspensionAnalysis.unacceptableBusinessPractice.weaponsIllegalGoods
-      ? 'Hapus konten terkait senjata atau barang ilegal karena melanggar kebijakan Google Ads'
+      ? 'Hapus semua konten tentang senjata atau barang ilegal'
       : undefined,
     points: !suspensionAnalysis.unacceptableBusinessPractice.weaponsIllegalGoods ? 2 : 0
   })
@@ -421,10 +421,10 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Promosi Agama Wajar',
     status: !suspensionAnalysis.unacceptableBusinessPractice.religiousPromotion ? 'pass' : 'warning',
     description: suspensionAnalysis.unacceptableBusinessPractice.religiousPromotion
-      ? 'Promosi agama berlebihan pada produk komersial terdeteksi'
-      : 'Tidak ada promosi agama berlebihan',
+      ? 'Terlalu banyak kata-kata agama di produk'
+      : 'Promosi agama masih wajar',
     recommendation: suspensionAnalysis.unacceptableBusinessPractice.religiousPromotion
-      ? 'Kurangi konten keagamaan yang berlebihan pada produk komersial'
+      ? 'Kurangi kata-kata agama, fokus ke manfaat produk'
       : undefined,
     points: !suspensionAnalysis.unacceptableBusinessPractice.religiousPromotion ? 2 : 1
   })
@@ -434,10 +434,10 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Klaim Toko Resmi Valid',
     status: !suspensionAnalysis.counterfeitGoods.fakeOfficialStore ? 'pass' : 'warning',
     description: suspensionAnalysis.counterfeitGoods.fakeOfficialStore
-      ? 'Klaim toko official tanpa verifikasi domain terdeteksi'
-      : 'Tidak ada klaim toko official palsu',
+      ? 'Klaim "toko resmi" tapi domain tidak resmi'
+      : 'Tidak ada klaim toko resmi palsu',
     recommendation: suspensionAnalysis.counterfeitGoods.fakeOfficialStore
-      ? 'Verifikasi klaim toko official dengan domain yang sesuai atau hapus klaim tersebut'
+      ? 'Hapus kata "official" atau gunakan domain resmi brand'
       : undefined,
     points: !suspensionAnalysis.counterfeitGoods.fakeOfficialStore ? 2 : 1
   })
@@ -455,11 +455,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Praktik Bisnis Dapat Diterima',
     status: businessPracticeIssues === 0 ? 'pass' : businessPracticeIssues <= 2 ? 'warning' : 'fail',
     description: businessPracticeIssues === 0
-      ? 'Praktik bisnis sesuai dengan kebijakan Google Ads'
-      : `${businessPracticeIssues} isu praktik bisnis terdeteksi (memerlukan analisis AI untuk detail)`,
+      ? 'Praktik bisnis aman dan sesuai aturan'
+      : 'Ada beberapa hal perlu dicek manual',
     evidence: suspensionAnalysis.unacceptableBusinessPractice.evidence?.join('; '),
     recommendation: businessPracticeIssues > 0
-      ? 'Beberapa pengecekan memerlukan analisis AI. Pastikan tidak ada gambar organ tubuh, afiliasi brand palsu, atau praktik bisnis yang tidak dapat diterima'
+      ? 'Cek: tidak ada gambar organ tubuh, foto medis, atau klaim brand tanpa izin'
       : undefined,
     points: businessPracticeIssues === 0 ? 6 : businessPracticeIssues <= 2 ? 3 : 0
   })
@@ -469,11 +469,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada Impersonasi Figur Publik',
     status: !suspensionAnalysis.publicFigureImpersonation.detected ? 'pass' : 'fail',
     description: suspensionAnalysis.publicFigureImpersonation.detected
-      ? `Potensi penggunaan figur publik: ${suspensionAnalysis.publicFigureImpersonation.publicFigures.join(', ')}`
-      : 'Tidak ada impersonasi figur publik terdeteksi',
+      ? `Ada nama figur publik: ${suspensionAnalysis.publicFigureImpersonation.publicFigures.join(', ')}`
+      : 'Tidak pakai nama figur publik',
     evidence: suspensionAnalysis.publicFigureImpersonation.evidence,
     recommendation: suspensionAnalysis.publicFigureImpersonation.detected
-      ? 'Hapus foto atau klaim dukungan dari figur publik tanpa verifikasi yang sah'
+      ? 'Hapus foto dan kata-kata tentang artis/figur publik'
       : undefined,
     points: !suspensionAnalysis.publicFigureImpersonation.detected ? 5 : 0
   })
@@ -484,10 +484,10 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada Cloaking',
     status: !suspensionAnalysis.technicalCircumvention.cloaking ? 'pass' : 'fail',
     description: suspensionAnalysis.technicalCircumvention.cloaking
-      ? 'Pola cloaking terdeteksi'
-      : 'Tidak ada pola cloaking terdeteksi',
+      ? 'Halaman berbeda saat dibuka bot vs manusia'
+      : 'Halaman sama untuk semua pengunjung',
     recommendation: suspensionAnalysis.technicalCircumvention.cloaking
-      ? 'Hapus praktik cloaking yang menampilkan konten berbeda ke bot vs pengunjung'
+      ? 'Hapus script yang bedain konten untuk bot'
       : undefined,
     points: !suspensionAnalysis.technicalCircumvention.cloaking ? 4 : 0
   })
@@ -497,11 +497,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada URL Tersembunyi',
     status: !suspensionAnalysis.technicalCircumvention.hiddenUrls ? 'pass' : 'fail',
     description: suspensionAnalysis.technicalCircumvention.hiddenUrls
-      ? 'URL tersembunyi dalam gambar terdeteksi'
-      : 'Tidak ada URL tersembunyi',
+      ? 'Ada link tersembunyi di gambar'
+      : 'Tidak ada link tersembunyi',
     evidence: suspensionAnalysis.technicalCircumvention.evidence?.find(e => e.includes('URL tersembunyi')),
     recommendation: suspensionAnalysis.technicalCircumvention.hiddenUrls
-      ? 'Hapus URL tersembunyi dalam gambar atau link yang mencurigakan'
+      ? 'Hapus link yang tersembunyi di dalam gambar'
       : undefined,
     points: !suspensionAnalysis.technicalCircumvention.hiddenUrls ? 2 : 0
   })
@@ -511,11 +511,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada Auto-Redirect',
     status: !suspensionAnalysis.technicalCircumvention.autoRedirects ? 'pass' : 'fail',
     description: suspensionAnalysis.technicalCircumvention.autoRedirects
-      ? 'Auto-redirect terdeteksi'
-      : 'Tidak ada auto-redirect',
+      ? 'Halaman otomatis pindah ke website lain'
+      : 'Halaman tidak redirect otomatis',
     evidence: suspensionAnalysis.technicalCircumvention.evidence?.find(e => e.includes('Auto-redirect')),
     recommendation: suspensionAnalysis.technicalCircumvention.autoRedirects
-      ? 'Hapus auto-redirect yang mengarahkan pengunjung ke domain lain secara otomatis'
+      ? 'Hapus script auto-redirect, biarkan pengunjung stay di halaman'
       : undefined,
     points: !suspensionAnalysis.technicalCircumvention.autoRedirects ? 3 : 0
   })
@@ -525,11 +525,11 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Jumlah Gambar Wajar',
     status: !suspensionAnalysis.technicalCircumvention.excessiveImages ? 'pass' : 'warning',
     description: suspensionAnalysis.technicalCircumvention.excessiveImages
-      ? 'Terlalu banyak gambar di halaman'
-      : 'Jumlah gambar masih wajar',
+      ? 'Gambar terlalu banyak (lebih dari 50)'
+      : 'Jumlah gambar wajar',
     evidence: suspensionAnalysis.technicalCircumvention.evidence?.find(e => e.includes('Terlalu banyak gambar')),
     recommendation: suspensionAnalysis.technicalCircumvention.excessiveImages
-      ? 'Kurangi jumlah gambar untuk meningkatkan performa dan menghindari deteksi spam'
+      ? 'Kurangi jumlah gambar, tambah teks penjelasan'
       : undefined,
     points: !suspensionAnalysis.technicalCircumvention.excessiveImages ? 2 : 1
   })
@@ -538,7 +538,7 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
   requirements.push({
     name: 'Informasi Perusahaan (Technical)',
     status: 'pass',
-    description: 'Sudah dicek di kategori Footer & Informasi Perusahaan',
+    description: 'Sudah dicek di bagian Footer',
     points: 2
   })
 
@@ -552,13 +552,13 @@ function evaluateSuspensionRisk(suspensionAnalysis: SuspensionAnalysis): Require
     name: 'Tidak Ada Barang Palsu',
     status: counterfeitIssues === 0 && !suspensionAnalysis.counterfeitGoods.fakeOfficialStore ? 'pass' : 'fail',
     description: counterfeitIssues === 0 && !suspensionAnalysis.counterfeitGoods.fakeOfficialStore
-      ? 'Tidak ada indikasi penjualan barang palsu'
-      : `Indikasi barang palsu terdeteksi: ${suspensionAnalysis.counterfeitGoods.detectedBrands.join(', ')}`,
+      ? 'Tidak menjual barang palsu/kw'
+      : `Kelihatan jual barang brand: ${suspensionAnalysis.counterfeitGoods.detectedBrands.join(', ')}`,
     evidence: suspensionAnalysis.counterfeitGoods.detectedBrands.length > 0
       ? suspensionAnalysis.counterfeitGoods.detectedBrands.join(', ')
       : undefined,
     recommendation: counterfeitIssues > 0 || suspensionAnalysis.counterfeitGoods.fakeOfficialStore
-      ? 'Hapus penggunaan foto produk brand, logo, atau klaim toko resmi tanpa otorisasi'
+      ? 'Hapus logo/foto brand atau ganti dengan foto produk asli'
       : undefined,
     points: counterfeitIssues === 0 && !suspensionAnalysis.counterfeitGoods.fakeOfficialStore ? 10 : 0
   })
