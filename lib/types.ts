@@ -56,6 +56,48 @@ export interface AIAnalysisResult {
   recommendations: string[]
 }
 
+// Suspension Analysis Types
+export interface SuspensionAnalysis {
+  multipleAccountAbuse: {
+    hasPattern: boolean
+    sameEmailDetected: boolean
+    sameImagesDetected: boolean
+    sameDomainDetected: boolean
+    newToOldRedirect: boolean
+    evidence?: string
+  }
+  unacceptableBusinessPractice: {
+    bodyOrganImages: boolean
+    homepageMismatch: boolean
+    weaponsIllegalGoods: boolean
+    medicalImagery: boolean
+    religiousPromotion: boolean
+    fakeBrandAffiliation: boolean
+    insufficientCompanyInfo: boolean
+    evidence?: string[]
+  }
+  publicFigureImpersonation: {
+    detected: boolean
+    publicFigures: string[]
+    fakeEndorsements: boolean
+    evidence?: string
+  }
+  technicalCircumvention: {
+    cloaking: boolean
+    hiddenUrls: boolean
+    autoRedirects: boolean
+    excessiveImages: boolean
+    evidence?: string[]
+  }
+  counterfeitGoods: {
+    brandProductPhotos: boolean
+    brandLogos: boolean
+    fakeOfficialStore: boolean
+    detectedBrands: string[]
+    evidence?: string[]
+  }
+}
+
 export interface Requirement {
   name: string
   status: 'pass' | 'fail' | 'warning'
@@ -85,10 +127,12 @@ export interface ScanResult {
     contentOriginality: RequirementCategory
     formAndIntegration: RequirementCategory
     footerAndCompany: RequirementCategory
+    suspensionRisk: RequirementCategory
   }
   redirectChain: RedirectStep[]
   htmlStructure: HTMLStructure
   contentAnalysis: ContentAnalysis
   aiAnalysis?: AIAnalysisResult
+  suspensionAnalysis: SuspensionAnalysis
   timestamp: string
 }

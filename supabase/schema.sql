@@ -73,3 +73,60 @@ $$ language 'plpgsql';
 DROP TRIGGER IF EXISTS update_scans_updated_at ON scans;
 CREATE TRIGGER update_scans_updated_at BEFORE UPDATE ON scans
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- Suspension Analysis Tables
+-- ============================================================================
+
+-- Image hashes tracking for detecting duplicate images across scans
+CREATE TABLE IF NOT EXISTS image_hashes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  scan_id UUID REFERENCES scans(id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  perceptual_hash TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Domain usage tracking for detecting multi-account abuse
+CREATE TABLE IF NOT EXISTS domain_usage (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  scan_id UUID REFERENCES scans(id) ON DELETE CASCADE,
+  domain TEXT NOT NULL,
+  business_context TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Email usage tracking for detecting multi-account abuse
+CREATE TABLE IF NOT EXISTS email_usage (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  scan_id UUID REFERENCES scans(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  source_location TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for suspension analysis tables
+CREATE INDEX IF NOT EXISTS idx_image_hashes_hash ON image_hashes(perceptual_hash);
+CREATE INDEX IF NOT EXISTS idx_image_hashes_url ON image_hashes(image_url);
+CREATE INDEX IF NOT EXISTS idx_image_hashes_scan_id ON image_hashes(scan_id);
+CREATE INDEX IF NOT EXISTS idx_domain_usage_domain ON domain_usage(domain);
+CREATE INDEX IF NOT EXISTS idx_domain_usage_scan_id ON domain_usage(scan_id);
+CREATE INDEX IF NOT EXISTS idx_email_usage_email ON email_usage(email);
+CREATE INDEX IF NOT EXISTS idx_email_usage_scan_id ON email_usage(scan_id);
+
+-- Enable Row Level Security for new tables
+ALTER TABLE image_hashes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE domain_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_usage ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for image_hashes
+CREATE POLICY "Allow public read access" ON image_hashes FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON image_hashes FOR INSERT WITH CHECK (true);
+
+-- RLS Policies for domain_usage
+CREATE POLICY "Allow public read access" ON domain_usage FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON domain_usage FOR INSERT WITH CHECK (true);
+
+-- RLS Policies for email_usage
+CREATE POLICY "Allow public read access" ON email_usage FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON email_usage FOR INSERT WITH CHECK (true);
