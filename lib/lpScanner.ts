@@ -3,24 +3,30 @@ import { parseHTMLStructure } from './htmlParser'
 import { analyzeContent } from './contentAnalyzer'
 import { analyzeWithAI } from './aiAnalyzer'
 import { analyzeSuspensionRisk } from './suspensionAnalyzer'
-import { ScanResult, Requirement, RequirementCategory, AIAnalysisResult, SuspensionAnalysis } from './types'
+import { ScanResult, Requirement, RequirementCategory, AIAnalysisResult, SuspensionAnalysis, ScanError } from './types'
+import { fetchWithRetry } from './fetchUtils'
 
 export async function scanLandingPage(url: string): Promise<ScanResult> {
   const startTime = Date.now()
 
-  // Step 1: Fetch landing page
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
+  // Step 1: Fetch landing page with retry and timeout
+  const fetchResult = await fetchWithRetry(url, {
+    timeout: 30000,      // 30 seconds
+    maxRetries: 3,       // Retry up to 3 times
+    retryDelay: 1000     // Start with 1 second delay
   })
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`)
+  if (!fetchResult.success || !fetchResult.data) {
+    // Throw ScanError with specific error type
+    throw new ScanError(
+      `Failed to fetch URL: ${fetchResult.errorDetails || 'Unknown error'}`,
+      fetchResult.errorType || 'unknown',
+      fetchResult.errorDetails
+    )
   }
 
-  const html = await response.text()
-  const finalUrl = response.url
+  const html = fetchResult.data
+  const finalUrl = fetchResult.finalUrl || url
 
   // Step 2: Check redirect chain
   const redirectChain = await checkRedirectChain(url)

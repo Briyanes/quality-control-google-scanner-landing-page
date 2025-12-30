@@ -2,6 +2,9 @@
  * URL Validator - Prevents SSRF and other URL-based attacks
  */
 
+import { fetchWithHeadFallback } from './fetchUtils'
+import { AccessibilityResult } from './types'
+
 export interface ValidationResult {
   valid: boolean
   error?: string
@@ -126,29 +129,33 @@ export function sanitizeUrl(url: string): string {
 }
 
 /**
- * Check if URL is accessible (with timeout)
+ * Check if URL is accessible (with timeout and HEAD→GET fallback)
+ * Returns detailed accessibility result with error classification
  */
-export async function checkUrlAccessible(url: string, timeout: number = 10000): Promise<boolean> {
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeout)
+export async function checkUrlAccessible(url: string, timeout: number = 15000): Promise<AccessibilityResult> {
+  const result = await fetchWithHeadFallback(url, {
+    timeout,
+    redirect: 'manual'
+  })
 
-  try {
-    const response = await fetch(url, {
-      method: 'HEAD',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      },
-      signal: controller.signal,
-      // Important: Don't follow redirects automatically to prevent redirect chains
-      redirect: 'manual'
-    })
+  // Accept 2xx and 3xx responses (including redirects)
+  const accessible = result.success || (result.status !== undefined && result.status >= 200 && result.status < 400)
 
-    clearTimeout(timeoutId)
-
-    // Accept 2xx and 3xx responses (including redirects)
-    return response.status >= 200 && response.status < 400
-  } catch (error) {
-    clearTimeout(timeoutId)
-    return false
+  return {
+    accessible,
+    errorType: result.errorType,
+    errorDetails: result.errorDetails,
+    statusCode: result.status,
+    attempts: result.attempts,
+    finalUrl: result.finalUrl
   }
+}
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use checkUrlAccessible() instead for detailed error information
+ */
+export async function checkUrlAccessibleLegacy(url: string, timeout: number = 10000): Promise<boolean> {
+  const result = await checkUrlAccessible(url, timeout)
+  return result.accessible
 }

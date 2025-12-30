@@ -1,3 +1,35 @@
+// Error Types for Fetch Failures
+export type FetchErrorType =
+  | 'timeout'
+  | 'connection'
+  | 'ssl'
+  | 'blocked'
+  | 'not_found'
+  | 'server_error'
+  | 'unknown'
+
+// Custom Scan Error Class
+export class ScanError extends Error {
+  constructor(
+    message: string,
+    public errorType: FetchErrorType,
+    public details?: string
+  ) {
+    super(message)
+    this.name = 'ScanError'
+  }
+}
+
+// Enhanced Accessibility Result
+export interface AccessibilityResult {
+  accessible: boolean
+  errorType?: FetchErrorType
+  errorDetails?: string
+  statusCode?: number
+  attempts: number
+  finalUrl?: string
+}
+
 // Scanner Types
 
 export interface RedirectStep {

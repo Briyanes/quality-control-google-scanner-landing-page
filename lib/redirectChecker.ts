@@ -1,4 +1,5 @@
 import { RedirectStep } from './types'
+import { fetchWithTimeout } from './fetchUtils'
 
 export async function checkRedirectChain(url: string): Promise<RedirectStep[]> {
   const chain: RedirectStep[] = []
@@ -8,15 +9,14 @@ export async function checkRedirectChain(url: string): Promise<RedirectStep[]> {
 
   try {
     while (redirectCount < maxRedirects) {
-      const response = await fetch(currentUrl, {
+      const fetchResult = await fetchWithTimeout(currentUrl, {
         method: 'HEAD',
-        redirect: 'manual',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-      }).catch(() => null)
+        timeout: 10000,      // 10 seconds per redirect
+        redirect: 'manual'
+      })
 
-      if (!response) {
+      // Check if fetch failed
+      if (!fetchResult.success || fetchResult.status === undefined) {
         // Failed to fetch, add last step and break
         chain.push({
           url: currentUrl,
@@ -24,20 +24,26 @@ export async function checkRedirectChain(url: string): Promise<RedirectStep[]> {
           domain: extractDomain(currentUrl),
           isRedirect: false
         })
+        console.error('[Redirect Checker] Failed to fetch redirect step:', {
+          url: currentUrl,
+          errorType: fetchResult.errorType,
+          errorDetails: fetchResult.errorDetails
+        })
         break
       }
 
       const step: RedirectStep = {
         url: currentUrl,
-        statusCode: response.status,
+        statusCode: fetchResult.status,
         domain: extractDomain(currentUrl),
-        isRedirect: response.status >= 300 && response.status < 400
+        isRedirect: fetchResult.status >= 300 && fetchResult.status < 400
       }
 
       chain.push(step)
 
       if (step.isRedirect) {
-        const location = response.headers.get('Location')
+        // Extract Location header from fetchResult.headers
+        const location = fetchResult.headers?.['Location'] || fetchResult.headers?.['location']
         if (!location) break
 
         // Check if redirect is to third-party domain
@@ -56,7 +62,7 @@ export async function checkRedirectChain(url: string): Promise<RedirectStep[]> {
       }
     }
   } catch (error) {
-    console.error('Redirect check error:', error)
+    console.error('[Redirect Checker] Unexpected error:', error)
   }
 
   return chain
