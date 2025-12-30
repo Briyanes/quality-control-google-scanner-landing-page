@@ -232,7 +232,7 @@ function ScannerContent() {
         >
           <Link href="/home" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div>
-              <h1 style={{
+              <h1 className="responsive-header-title" style={{
                 fontSize: '32px',
                 fontWeight: 'bold',
                 color: '#111827',
@@ -241,7 +241,7 @@ function ScannerContent() {
               }}>
                 QC Landing Page Scanner
               </h1>
-              <p style={{
+              <p className="responsive-header-subtitle" style={{
                 fontSize: '14px',
                 color: '#6b7280',
                 margin: 0
@@ -251,7 +251,7 @@ function ScannerContent() {
             </div>
           </Link>
 
-          <div style={{
+          <div className="responsive-header-logo-container" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
