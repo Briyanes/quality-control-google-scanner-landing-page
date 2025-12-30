@@ -66,14 +66,16 @@ export default function HomePage() {
                 fontWeight: 'bold',
                 color: '#111827',
                 margin: 0,
-                marginBottom: '4px'
+                marginBottom: '4px',
+                lineHeight: '1.2'
               }}>
                 QC Landing Page Scanner
               </h1>
               <p className="responsive-header-subtitle" style={{
                 fontSize: '14px',
                 color: '#6b7280',
-                margin: 0
+                margin: 0,
+                lineHeight: '1.4'
               }}>
                 Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
               </p>
