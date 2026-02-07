@@ -344,16 +344,33 @@ export async function fetchWithCloudflareFallback(
   console.log('[CF Bypass] Strategy 3: Google Cache')
   const cacheResult = await fetchFromGoogleCache(url, 20000)
   if (cacheResult.success && cacheResult.data) {
-    cacheResult.attempts = directResult.attempts + 2
-    return cacheResult
+    // VALIDATE CACHE QUALITY: Reject if too short (likely snippet/redirect page)
+    // Minimum 1000 characters and reasonable content ratio
+    const cacheLength = cacheResult.data.length
+    const hasSubstantialContent = cacheLength > 1000
+
+    if (!hasSubstantialContent) {
+      console.warn('[CF Bypass] Google Cache rejected: Too short', { cacheLength })
+    } else {
+      cacheResult.attempts = directResult.attempts + 2
+      return cacheResult
+    }
   }
 
   // Strategy 4: Archive.org Wayback Machine
   console.log('[CF Bypass] Strategy 4: Archive.org')
   const archiveResult = await fetchFromArchive(url, 20000)
   if (archiveResult.success && archiveResult.data) {
-    archiveResult.attempts = directResult.attempts + 3
-    return archiveResult
+    // VALIDATE ARCHIVE QUALITY: Reject if too short
+    const archiveLength = archiveResult.data.length
+    const hasSubstantialContent = archiveLength > 1000
+
+    if (!hasSubstantialContent) {
+      console.warn('[CF Bypass] Archive.org rejected: Too short', { archiveLength })
+    } else {
+      archiveResult.attempts = directResult.attempts + 3
+      return archiveResult
+    }
   }
 
   // All strategies failed
