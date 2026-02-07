@@ -110,6 +110,262 @@ export function isCloudflareChallengePage(html: string): boolean {
 const DEFAULT_HEADERS = getHeadersForAttempt(0)
 
 /**
+ * Strategy headers: try with Google Referer to mimic search result click
+ * Many Cloudflare configs whitelist traffic from Google search
+ */
+function getGoogleRefererHeaders(attempt: number = 0): Record<string, string> {
+  const headers = getHeadersForAttempt(attempt)
+  headers['Referer'] = 'https://www.google.com/'
+  headers['Sec-Fetch-Site'] = 'cross-site'
+  return headers
+}
+
+/**
+ * Fetch URL content from Google Web Cache as fallback
+ * Google Cache stores crawled versions of pages, bypassing Cloudflare
+ */
+export async function fetchFromGoogleCache(url: string, timeout: number = 20000): Promise<FetchResult> {
+  const cacheUrl = `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}&num=1&strip=0`
+
+  console.log('[Google Cache]', { url, cacheUrl: cacheUrl.substring(0, 80) + '...' })
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+  try {
+    const response = await fetch(cacheUrl, {
+      method: 'GET',
+      headers: {
+        'User-Agent': USER_AGENT_POOL[0],
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate',
+      },
+      signal: controller.signal,
+      redirect: 'follow',
+    })
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      console.log('[Google Cache] Not available:', response.status)
+      return { success: false, status: response.status, errorType: 'not_found', attempts: 1 }
+    }
+
+    const html = await response.text()
+
+    // Google Cache wraps content - extract the actual page content
+    // Remove Google's cache banner/header
+    let cleanHtml = html
+    // Google inserts a div at the top; try to find original content
+    const bodyMatch = html.match(/<div id="google-cache-hdr">[\s\S]*?<\/div>\s*([\s\S]*)/i)
+    if (bodyMatch) {
+      cleanHtml = bodyMatch[1]
+    }
+
+    // Verify we got substantial content (not just Google's 404)
+    if (cleanHtml.length < 500) {
+      console.log('[Google Cache] Content too short:', cleanHtml.length)
+      return { success: false, errorType: 'not_found', errorDetails: 'Google Cache content too short', attempts: 1 }
+    }
+
+    console.log('[Google Cache] Success, content length:', cleanHtml.length)
+    return {
+      success: true,
+      status: 200,
+      data: cleanHtml,
+      attempts: 1,
+      finalUrl: url
+    }
+  } catch (error: any) {
+    clearTimeout(timeoutId)
+    console.error('[Google Cache] Error:', error.message)
+    return { success: false, errorType: 'unknown', errorDetails: error.message, attempts: 1 }
+  }
+}
+
+/**
+ * Fetch URL content from Wayback Machine (archive.org) as fallback
+ * Uses the latest available snapshot
+ */
+export async function fetchFromArchive(url: string, timeout: number = 20000): Promise<FetchResult> {
+  // First, check if there's a recent snapshot
+  const apiUrl = `https://archive.org/wayback/available?url=${encodeURIComponent(url)}`
+
+  console.log('[Archive.org]', { url })
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+  try {
+    const apiResponse = await fetch(apiUrl, {
+      headers: { 'User-Agent': USER_AGENT_POOL[0] },
+      signal: controller.signal,
+    })
+
+    if (!apiResponse.ok) {
+      clearTimeout(timeoutId)
+      console.log('[Archive.org] API error:', apiResponse.status)
+      return { success: false, errorType: 'not_found', attempts: 1 }
+    }
+
+    const apiData = await apiResponse.json()
+    const snapshot = apiData?.archived_snapshots?.closest
+
+    if (!snapshot || !snapshot.available) {
+      clearTimeout(timeoutId)
+      console.log('[Archive.org] No snapshot available')
+      return { success: false, errorType: 'not_found', errorDetails: 'No archive snapshot available', attempts: 1 }
+    }
+
+    // Check if snapshot is recent (within 90 days)
+    const snapshotDate = snapshot.timestamp // Format: YYYYMMDDHHmmss
+    const snapshotYear = parseInt(snapshotDate.substring(0, 4))
+    const snapshotMonth = parseInt(snapshotDate.substring(4, 6))
+    const now = new Date()
+    const monthsDiff = (now.getFullYear() - snapshotYear) * 12 + (now.getMonth() + 1 - snapshotMonth)
+
+    if (monthsDiff > 3) {
+      clearTimeout(timeoutId)
+      console.log('[Archive.org] Snapshot too old:', snapshotDate)
+      return { success: false, errorType: 'not_found', errorDetails: `Archive snapshot too old: ${snapshotDate}`, attempts: 1 }
+    }
+
+    // Fetch the actual archived page - use raw (id_) version for clean HTML
+    const archiveUrl = snapshot.url.replace('/web/', '/web/id_/')
+
+    console.log('[Archive.org] Fetching snapshot:', archiveUrl.substring(0, 80) + '...')
+
+    const pageResponse = await fetch(archiveUrl, {
+      headers: {
+        'User-Agent': USER_AGENT_POOL[0],
+        'Accept': 'text/html,*/*',
+      },
+      signal: controller.signal,
+      redirect: 'follow',
+    })
+    clearTimeout(timeoutId)
+
+    if (!pageResponse.ok) {
+      console.log('[Archive.org] Page fetch error:', pageResponse.status)
+      return { success: false, status: pageResponse.status, errorType: 'server_error', attempts: 1 }
+    }
+
+    const html = await pageResponse.text()
+
+    if (html.length < 500) {
+      console.log('[Archive.org] Content too short:', html.length)
+      return { success: false, errorType: 'not_found', errorDetails: 'Archive content too short', attempts: 1 }
+    }
+
+    console.log('[Archive.org] Success, content length:', html.length, 'snapshot:', snapshotDate)
+    return {
+      success: true,
+      status: 200,
+      data: html,
+      attempts: 1,
+      finalUrl: url
+    }
+  } catch (error: any) {
+    clearTimeout(timeoutId)
+    console.error('[Archive.org] Error:', error.message)
+    return { success: false, errorType: 'unknown', errorDetails: error.message, attempts: 1 }
+  }
+}
+
+/**
+ * Enhanced fetch with Cloudflare bypass cascade:
+ * 1. Direct fetch with User-Agent rotation (standard)
+ * 2. Direct fetch with Google Referer (mimics Google search click)
+ * 3. Google Web Cache (cached version, bypasses CF entirely)
+ * 4. Archive.org Wayback Machine (last resort fallback)
+ */
+export async function fetchWithCloudflareFallback(
+  url: string,
+  config: FetchConfig = {}
+): Promise<FetchResult> {
+  const timeout = config.timeout || 30000
+
+  // Strategy 1: Direct fetch with standard headers
+  console.log('[CF Bypass] Strategy 1: Direct fetch')
+  const directResult = await fetchWithRetry(url, {
+    ...config,
+    timeout,
+    maxRetries: 2,       // Quick first try (2 attempts only)
+    retryDelay: 1000
+  })
+
+  if (directResult.success && directResult.data) {
+    return directResult
+  }
+
+  const isCloudflareIssue = directResult.errorType === 'cloudflare_blocked' ||
+    directResult.errorType === 'blocked' ||
+    directResult.isCloudflare
+
+  if (!isCloudflareIssue) {
+    // Not a Cloudflare issue, return the original error
+    return directResult
+  }
+
+  // Strategy 2: Fetch with Google Referer header
+  console.log('[CF Bypass] Strategy 2: Google Referer')
+  const googleRefController = new AbortController()
+  const googleRefTimeout = setTimeout(() => googleRefController.abort(), 15000)
+  try {
+    const googleRefHeaders = getGoogleRefererHeaders(2)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: googleRefHeaders,
+      signal: googleRefController.signal,
+      redirect: 'follow'
+    })
+    clearTimeout(googleRefTimeout)
+
+    if (response.ok) {
+      const data = await response.text()
+      if (data && data.length > 500 && !isCloudflareChallengePage(data)) {
+        console.log('[CF Bypass] Google Referer worked! Content length:', data.length)
+        return {
+          success: true,
+          status: response.status,
+          data,
+          attempts: directResult.attempts + 1,
+          finalUrl: response.url
+        }
+      }
+    }
+    console.log('[CF Bypass] Google Referer failed:', response.status)
+  } catch (e: any) {
+    clearTimeout(googleRefTimeout)
+    console.log('[CF Bypass] Google Referer error:', e.message)
+  }
+
+  // Strategy 3: Google Web Cache
+  console.log('[CF Bypass] Strategy 3: Google Cache')
+  const cacheResult = await fetchFromGoogleCache(url, 20000)
+  if (cacheResult.success && cacheResult.data) {
+    cacheResult.attempts = directResult.attempts + 2
+    return cacheResult
+  }
+
+  // Strategy 4: Archive.org Wayback Machine
+  console.log('[CF Bypass] Strategy 4: Archive.org')
+  const archiveResult = await fetchFromArchive(url, 20000)
+  if (archiveResult.success && archiveResult.data) {
+    archiveResult.attempts = directResult.attempts + 3
+    return archiveResult
+  }
+
+  // All strategies failed
+  console.error('[CF Bypass] All strategies failed for:', url)
+  return {
+    ...directResult,
+    errorDetails: `Cloudflare memblokir akses langsung (403). Google Cache dan Archive.org juga tidak tersedia untuk URL ini.`,
+    attempts: directResult.attempts + 3
+  }
+}
+
+/**
  * Classify fetch errors into specific types
  */
 function classifyError(error: Error, statusCode?: number): FetchResult['errorType'] {

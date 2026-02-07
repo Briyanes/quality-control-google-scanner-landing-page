@@ -4,16 +4,16 @@ import { analyzeContent } from './contentAnalyzer'
 import { analyzeWithAI } from './aiAnalyzer'
 import { analyzeSuspensionRisk } from './suspensionAnalyzer'
 import { ScanResult, Requirement, RequirementCategory, AIAnalysisResult, SuspensionAnalysis, ScanError } from './types'
-import { fetchWithRetry, isCloudflareChallengePage } from './fetchUtils'
+import { fetchWithRetry, isCloudflareChallengePage, fetchWithCloudflareFallback } from './fetchUtils'
 
 export async function scanLandingPage(url: string): Promise<ScanResult> {
   const startTime = Date.now()
 
-  // Step 1: Fetch landing page with retry, timeout, and User-Agent rotation
-  // Enhanced: 5 retries for Cloudflare-protected sites (each with different UA)
-  const fetchResult = await fetchWithRetry(url, {
-    timeout: 30000,      // 30 seconds
-    maxRetries: 5,       // Retry up to 5 times (each with different User-Agent)
+  // Step 1: Fetch landing page with Cloudflare bypass cascade
+  // Tries: Direct fetch → Google Referer → Google Cache → Archive.org
+  const fetchResult = await fetchWithCloudflareFallback(url, {
+    timeout: 30000,      // 30 seconds per strategy
+    maxRetries: 3,       // Retries for direct fetch
     retryDelay: 1500     // Start with 1.5 second delay
   })
 
