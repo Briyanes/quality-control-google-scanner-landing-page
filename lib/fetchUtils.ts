@@ -153,6 +153,15 @@ export async function fetchFromGoogleCache(url: string, timeout: number = 20000)
 
     const html = await response.text()
 
+    // CRITICAL: Detect if Google returned a search result page instead of cached content
+    // This happens when Google doesn't have a cache for the URL
+    const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
+    const pageTitle = titleMatch ? titleMatch[1].trim() : ''
+    if (pageTitle === 'Google Search' || /google\.com\/search/.test(html)) {
+      console.log('[Google Cache] Got Google Search result page instead of cache:', pageTitle)
+      return { success: false, errorType: 'not_found', errorDetails: 'Google Cache returned search results, not cached content', attempts: 1 }
+    }
+
     // Google Cache wraps content - extract the actual page content
     // Remove Google's cache banner/header
     let cleanHtml = html
@@ -252,6 +261,14 @@ export async function fetchFromArchive(url: string, timeout: number = 20000): Pr
 
     const html = await pageResponse.text()
 
+    // CRITICAL: Detect if Archive returned a redirect/error page instead of content
+    const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
+    const pageTitle = titleMatch ? titleMatch[1].trim() : ''
+    if (pageTitle === 'Google Search' || /google\.com\/search/.test(html) || /wayback-machine/.test(pageTitle.toLowerCase())) {
+      console.log('[Archive.org] Got unexpected page:', pageTitle)
+      return { success: false, errorType: 'not_found', errorDetails: 'Archive returned unexpected page', attempts: 1 }
+    }
+
     if (html.length < 500) {
       console.log('[Archive.org] Content too short:', html.length)
       return { success: false, errorType: 'not_found', errorDetails: 'Archive content too short', attempts: 1 }
@@ -323,7 +340,12 @@ export async function fetchWithCloudflareFallback(
 
     if (response.ok) {
       const data = await response.text()
-      if (data && data.length > 500 && !isCloudflareChallengePage(data)) {
+      // CRITICAL: Detect if we got redirected to Google Search instead of the target page
+      const titleMatch = data.match(/<title[^>]*>([^<]*)<\/title>/i)
+      const pageTitle = titleMatch ? titleMatch[1].trim() : ''
+      const isGoogleSearchPage = pageTitle === 'Google Search' || /google\.com\/search/.test(data)
+
+      if (data && data.length > 500 && !isCloudflareChallengePage(data) && !isGoogleSearchPage) {
         console.log('[CF Bypass] Google Referer worked! Content length:', data.length)
         return {
           success: true,
@@ -332,6 +354,9 @@ export async function fetchWithCloudflareFallback(
           attempts: directResult.attempts + 1,
           finalUrl: response.url
         }
+      }
+      if (isGoogleSearchPage) {
+        console.log('[CF Bypass] Google Referer got Google Search page instead of target:', pageTitle)
       }
     }
     console.log('[CF Bypass] Google Referer failed:', response.status)
