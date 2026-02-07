@@ -92,10 +92,10 @@ export function isCloudflareResponse(headers?: Record<string, string>): boolean 
  */
 export function isCloudflareChallengePage(html: string): boolean {
   const patterns = [
-    /Attention Required.*Cloudflare/is,
+    /Attention Required[\s\S]*Cloudflare/i,
     /cf-browser-verification/i,
     /cf-challenge-running/i,
-    /Just a moment.*Enable JavaScript/is,
+    /Just a moment[\s\S]*Enable JavaScript/i,
     /<title>Just a moment\.\.\.<\/title>/i,
     /challenges\.cloudflare\.com/i,
     /Checking if the site connection is secure/i,
