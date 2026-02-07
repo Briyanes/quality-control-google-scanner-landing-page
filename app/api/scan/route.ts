@@ -6,6 +6,10 @@ import { validateUrl, checkUrlAccessible } from '@/lib/urlValidator'
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 import { ScanError, FetchErrorType, AccessibilityResult } from '@/lib/types'
 
+// Set max duration for serverless function (Vercel)
+// Important for sites behind CDNs (Cloudflare) that may require retries
+export const maxDuration = 60
+
 /**
  * Get user-friendly error message based on error type
  */
@@ -19,6 +23,8 @@ function getUserFriendlyErrorMessage(errorType: FetchErrorType | undefined, stat
       return 'The website has an invalid SSL certificate. The site owner needs to fix their security certificate.'
     case 'blocked':
       return 'Access to this website is blocked. The site may be blocking automated requests or detecting bots.'
+    case 'cloudflare_blocked':
+      return 'This website is protected by Cloudflare and is blocking our scanner. The site returned a Cloudflare challenge that requires a real browser. We will attempt to scan the content with alternative methods.'
     case 'not_found':
       return 'The URL does not exist (404 error). Please check the URL and try again.'
     case 'server_error':
@@ -72,17 +78,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if URL is accessible (with timeout and detailed error reporting)
+    // Enhanced: Cloudflare-protected sites get special handling
     const accessibilityResult: AccessibilityResult = await checkUrlAccessible(url, 15000)
     if (!accessibilityResult.accessible) {
-      return NextResponse.json(
-        {
-          error: getUserFriendlyErrorMessage(accessibilityResult.errorType, accessibilityResult.statusCode),
-          errorType: accessibilityResult.errorType,
-          statusCode: accessibilityResult.statusCode,
-          details: accessibilityResult.errorDetails
-        },
-        { status: 400 }
-      )
+      // For Cloudflare blocks, still attempt the scan as the main scanner
+      // has more aggressive retry logic with User-Agent rotation
+      if (accessibilityResult.errorType === 'cloudflare_blocked') {
+        console.log('[Scan] Cloudflare blocked accessibility check, attempting full scan anyway:', url)
+        // Fall through to the scan - don't return error yet
+      } else {
+        return NextResponse.json(
+          {
+            error: getUserFriendlyErrorMessage(accessibilityResult.errorType, accessibilityResult.statusCode),
+            errorType: accessibilityResult.errorType,
+            statusCode: accessibilityResult.statusCode,
+            details: accessibilityResult.errorDetails
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Perform the scan
@@ -139,13 +153,18 @@ export async function POST(request: NextRequest) {
 
     // Handle ScanError specifically
     if (error instanceof ScanError) {
+      // For Cloudflare blocks, provide a more helpful message with the actual error details
+      const isCloudflareError = error.errorType === 'cloudflare_blocked'
       return NextResponse.json(
         {
-          error: getUserFriendlyErrorMessage(error.errorType),
+          error: isCloudflareError
+            ? error.message  // Use the detailed Indonesian message from lpScanner
+            : getUserFriendlyErrorMessage(error.errorType),
           errorType: error.errorType,
-          details: error.details
+          details: error.details,
+          isCloudflare: isCloudflareError
         },
-        { status: 400 }
+        { status: isCloudflareError ? 403 : 400 }
       )
     }
 

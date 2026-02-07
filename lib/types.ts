@@ -4,6 +4,7 @@ export type FetchErrorType =
   | 'connection'
   | 'ssl'
   | 'blocked'
+  | 'cloudflare_blocked'
   | 'not_found'
   | 'server_error'
   | 'unknown'

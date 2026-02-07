@@ -12,7 +12,8 @@ export async function checkRedirectChain(url: string): Promise<RedirectStep[]> {
       const fetchResult = await fetchWithTimeout(currentUrl, {
         method: 'HEAD',
         timeout: 10000,      // 10 seconds per redirect
-        redirect: 'manual'
+        redirect: 'manual',
+        attempt: redirectCount  // Rotate User-Agent per redirect step
       })
 
       // Check if fetch failed

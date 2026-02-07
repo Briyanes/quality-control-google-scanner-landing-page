@@ -4,22 +4,27 @@ import { analyzeContent } from './contentAnalyzer'
 import { analyzeWithAI } from './aiAnalyzer'
 import { analyzeSuspensionRisk } from './suspensionAnalyzer'
 import { ScanResult, Requirement, RequirementCategory, AIAnalysisResult, SuspensionAnalysis, ScanError } from './types'
-import { fetchWithRetry } from './fetchUtils'
+import { fetchWithRetry, isCloudflareChallengePage } from './fetchUtils'
 
 export async function scanLandingPage(url: string): Promise<ScanResult> {
   const startTime = Date.now()
 
-  // Step 1: Fetch landing page with retry and timeout
+  // Step 1: Fetch landing page with retry, timeout, and User-Agent rotation
+  // Enhanced: 5 retries for Cloudflare-protected sites (each with different UA)
   const fetchResult = await fetchWithRetry(url, {
     timeout: 30000,      // 30 seconds
-    maxRetries: 3,       // Retry up to 3 times
-    retryDelay: 1000     // Start with 1 second delay
+    maxRetries: 5,       // Retry up to 5 times (each with different User-Agent)
+    retryDelay: 1500     // Start with 1.5 second delay
   })
 
   if (!fetchResult.success || !fetchResult.data) {
-    // Throw ScanError with specific error type
+    // Provide specific error for Cloudflare blocks
+    const errorMsg = fetchResult.errorType === 'cloudflare_blocked'
+      ? `Website dilindungi Cloudflare dan memblokir scanner kami. Cloudflare mengembalikan ${fetchResult.status} setelah ${fetchResult.attempts} percobaan dengan User-Agent berbeda.`
+      : `Failed to fetch URL: ${fetchResult.errorDetails || 'Unknown error'}`
+
     throw new ScanError(
-      `Failed to fetch URL: ${fetchResult.errorDetails || 'Unknown error'}`,
+      errorMsg,
       fetchResult.errorType || 'unknown',
       fetchResult.errorDetails
     )
@@ -27,6 +32,15 @@ export async function scanLandingPage(url: string): Promise<ScanResult> {
 
   const html = fetchResult.data
   const finalUrl = fetchResult.finalUrl || url
+
+  // Verify we got actual content, not a Cloudflare challenge page
+  if (isCloudflareChallengePage(html)) {
+    throw new ScanError(
+      'Website menampilkan halaman challenge Cloudflare. Scanner tidak bisa mengakses konten sebenarnya karena proteksi bot Cloudflare.',
+      'cloudflare_blocked',
+      'Cloudflare challenge page received instead of actual content'
+    )
+  }
 
   // Step 2: Check redirect chain
   const redirectChain = await checkRedirectChain(url)

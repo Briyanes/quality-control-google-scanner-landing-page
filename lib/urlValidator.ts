@@ -131,6 +131,8 @@ export function sanitizeUrl(url: string): string {
 /**
  * Check if URL is accessible (with timeout and HEAD→GET fallback)
  * Returns detailed accessibility result with error classification
+ * Enhanced: recognizes Cloudflare blocks and passes them through for
+ * the main scanner to handle with more aggressive retry strategies
  */
 export async function checkUrlAccessible(url: string, timeout: number = 15000): Promise<AccessibilityResult> {
   const result = await fetchWithHeadFallback(url, {
@@ -141,9 +143,15 @@ export async function checkUrlAccessible(url: string, timeout: number = 15000): 
   // Accept 2xx and 3xx responses (including redirects)
   const accessible = result.success || (result.status !== undefined && result.status >= 200 && result.status < 400)
 
+  // Cloudflare-specific: propagate the cloudflare_blocked error type
+  // so the API route can decide to still attempt a full scan
+  const errorType = result.errorType === 'cloudflare_blocked'
+    ? 'cloudflare_blocked'
+    : result.errorType
+
   return {
     accessible,
-    errorType: result.errorType,
+    errorType,
     errorDetails: result.errorDetails,
     statusCode: result.status,
     attempts: result.attempts,
