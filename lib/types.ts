@@ -67,6 +67,16 @@ export interface ContentAnalysis {
   hasAffiliateLinks: boolean
   externalLinkCount: number
   contentHash: string
+  imageAnalysis?: ImageAnalysis
+}
+
+export interface ImageAnalysis {
+  totalImages: number
+  uniqueImages: number
+  duplicateCount: number
+  duplicateRatio: number
+  hasExcessiveDuplicates: boolean
+  duplicateImageUrls: string[] // URLs that appear more than once
 }
 
 export interface AIAnalysisResult {

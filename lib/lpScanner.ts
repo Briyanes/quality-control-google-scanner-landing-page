@@ -238,6 +238,23 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
     })
   }
 
+  // Check 5: No excessive duplicate images (NEW - detects fake testimonials)
+  if (contentAnalysis.imageAnalysis) {
+    const imgAnalysis = contentAnalysis.imageAnalysis
+    requirements.push({
+      name: 'Kualitas Visual & Testimoni',
+      status: !imgAnalysis.hasExcessiveDuplicates ? 'pass' : 'warning',
+      description: imgAnalysis.hasExcessiveDuplicates
+        ? `${imgAnalysis.duplicateCount} gambar duplikat dari ${imgAnalysis.totalImages} total (${(imgAnalysis.duplicateRatio * 100).toFixed(0)}%)`
+        : `${imgAnalysis.totalImages} gambar, semuanya unik`,
+      evidence: imgAnalysis.hasExcessiveDuplicates ? imgAnalysis.duplicateImageUrls.slice(0, 3).join(', ') : undefined,
+      recommendation: imgAnalysis.hasExcessiveDuplicates
+        ? 'Hindari penggunaan gambar yang sama berulang kali, terutama untuk testimoni. Gunakan foto yang berbeda-beda untuk lebih kredibel.'
+        : undefined,
+      points: !imgAnalysis.hasExcessiveDuplicates ? 8 : 4
+    })
+  }
+
   const passed = requirements.filter(r => r.status === 'pass').length
   const failed = requirements.filter(r => r.status === 'fail').length
   const warnings = requirements.filter(r => r.status === 'warning').length
@@ -249,7 +266,7 @@ function evaluateContentOriginality(contentAnalysis: any, aiAnalysis: any): Requ
     failed,
     warnings,
     totalPoints,
-    maxPoints: 30,
+    maxPoints: 38,
     requirements
   }
 }

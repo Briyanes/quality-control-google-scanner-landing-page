@@ -1,8 +1,9 @@
-import { ContentAnalysis } from './types'
+import { ContentAnalysis, ImageAnalysis } from './types'
 import { isExternalLink } from './htmlParser'
 
 export function analyzeContent(html: string, url: string): ContentAnalysis {
   const text = extractTextContent(html)
+  const imageUrls = extractImageUrls(html)
 
   return {
     textLength: text.length,
@@ -13,7 +14,8 @@ export function analyzeContent(html: string, url: string): ContentAnalysis {
     hasDuplicatePattern: detectDuplicateContent(text),
     hasAffiliateLinks: detectAffiliateLinks(html),
     externalLinkCount: countExternalLinks(html, url),
-    contentHash: generateHash(text)
+    contentHash: generateHash(text),
+    imageAnalysis: analyzeImagePatterns(imageUrls)
   }
 }
 
@@ -140,4 +142,76 @@ function generateHash(text: string): string {
     hash = hash & hash // Convert to 32bit integer
   }
   return hash.toString(16)
+}
+
+/**
+ * Extract image URLs from HTML
+ */
+function extractImageUrls(html: string): string[] {
+  const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/gi
+  const urls: string[] = []
+  let match
+
+  while ((match = imgRegex.exec(html)) !== null) {
+    if (match[1]) {
+      urls.push(match[1])
+    }
+  }
+
+  return urls
+}
+
+/**
+ * Analyze image patterns for duplicates
+ * Useful for detecting suspicious patterns like fake testimonials with same photos
+ */
+function analyzeImagePatterns(imageUrls: string[]): ImageAnalysis {
+  if (imageUrls.length === 0) {
+    return {
+      totalImages: 0,
+      uniqueImages: 0,
+      duplicateCount: 0,
+      duplicateRatio: 0,
+      hasExcessiveDuplicates: false,
+      duplicateImageUrls: []
+    }
+  }
+
+  // Count occurrences of each image URL
+  const imageCountMap = new Map<string, number>()
+  for (const url of imageUrls) {
+    // Normalize URL by removing query parameters (they might be the same image)
+    const normalizedUrl = url.split('?')[0]
+    imageCountMap.set(normalizedUrl, (imageCountMap.get(normalizedUrl) || 0) + 1)
+  }
+
+  const totalImages = imageUrls.length
+  const uniqueImages = imageCountMap.size
+
+  // Find duplicates (images that appear more than once)
+  const duplicateImageUrls: string[] = []
+  let duplicateCount = 0
+
+  const entries = Array.from(imageCountMap.entries())
+  for (const [url, count] of entries) {
+    if (count > 1) {
+      duplicateCount += (count - 1) // Count extra occurrences
+      duplicateImageUrls.push(`${url} (${count}x)`)
+    }
+  }
+
+  // Calculate duplicate ratio (extra images / total images)
+  const duplicateRatio = totalImages > 0 ? duplicateCount / totalImages : 0
+
+  // Flag as excessive if more than 30% duplicates OR more than 3 duplicate images
+  const hasExcessiveDuplicates = duplicateRatio > 0.3 || duplicateCount >= 3
+
+  return {
+    totalImages,
+    uniqueImages,
+    duplicateCount,
+    duplicateRatio,
+    hasExcessiveDuplicates,
+    duplicateImageUrls
+  }
 }
