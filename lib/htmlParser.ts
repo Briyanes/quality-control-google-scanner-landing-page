@@ -30,10 +30,13 @@ export function parseHTMLStructure(html: string, url: string): HTMLStructure {
       structure.description = descMatch[1].trim()
     }
 
-    // Check for footer
+    // Check for footer (support Elementor and other page builders)
     structure.hasFooter = /<footer[\s>]/i.test(html) ||
                          /<div[^>]*\bclass=["'][^"']*\bfooter\b/i.test(html) ||
-                         /<div[^>]*\bid=["'][^"']*\bfooter\b/i.test(html)
+                         /<div[^>]*\bid=["'][^"']*\bfooter\b/i.test(html) ||
+                         /data-elementor-type=["']footer["']/i.test(html) ||
+                         /elementor-location-footer/i.test(html) ||
+                         /data-element-type=["']footer["']/i.test(html)
 
     // Check for company info patterns
     const companyPatterns = [
@@ -47,8 +50,8 @@ export function parseHTMLStructure(html: string, url: string): HTMLStructure {
     structure.hasCompanyInfo = companyPatterns.some(pattern => pattern.test(html))
 
     // Check for policy links (with Bahasa Indonesia support)
-    structure.hasPolicyLinks.privacy = /privacy|privasi|kebijakan/i.test(html)
-    structure.hasPolicyLinks.terms = /terms|ketentuan|syarat|toc|klausul/i.test(html) || /terms\s+of\s+service/i.test(html)
+    structure.hasPolicyLinks.privacy = /privacy|privasi|kebijakan|kebijakan\s+privasi/i.test(html)
+    structure.hasPolicyLinks.terms = /terms|ketentuan|syarat|toc|klausul|syarat\s+dan\s+ketentuan|terms\s+of\s+service/i.test(html)
     structure.hasPolicyLinks.contact = /contact|kontak|hubungi/i.test(html) || /mailto:/i.test(html) || hasContactInfo(html)
 
     // Check for forms
